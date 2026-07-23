@@ -1,3 +1,9 @@
+// Form condiviso da creazione e modifica animale: la sola presenza di
+// animaleIniziale decide la modalità (POST vs PATCH, precompilazione dei
+// campi). Nessuna duplicazione tra le due pagine che lo usano
+// (animali/nuovo e animali/[id]/modifica): il form stesso è l'unica
+// fonte di verità per validazione e invio.
+
 "use client";
 
 import { useRef, useState } from "react";
@@ -21,6 +27,8 @@ type AnimaleIniziale = {
   sterilizzato: boolean | null;
 };
 
+// L'input HTML type="date" richiede il formato "YYYY-MM-DD" come stringa:
+// questa funzione fa da ponte tra il Date di Prisma e quel formato.
 function toDateInputValue(d: Date | null) {
   if (!d) return "";
   return d.toISOString().slice(0, 10);
@@ -31,6 +39,9 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
   const [erroreServer, setErroreServer] = useState<string | null>(null);
   const [erroreFoto, setErroreFoto] = useState<string | null>(null);
   const [elaborazioneFoto, setElaborazioneFoto] = useState(false);
+  // Riferimento all'input file nascosto: permette al bottone "Carica/
+  // Cambia foto" di aprire il selettore file senza mostrare l'input
+  // grezzo del browser, meno intuitivo per utenti non tecnici.
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -40,6 +51,8 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
     watch,
     formState: { errors, isSubmitting },
   } = useForm<AnimaleInput>({
+    // Stesso schema Zod della rotta API: eventuali errori mostrati qui
+    // sono gli stessi che il server applicherebbe comunque.
     resolver: zodResolver(animaleSchema),
     defaultValues: animaleIniziale
       ? {
@@ -56,8 +69,18 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
       : { specie: "CANE" },
   });
 
+  // watch (non un semplice defaultValue) perché la foto cambia durante la
+  // sessione di modifica (dopo l'upload), e l'anteprima deve aggiornarsi
+  // subito senza aspettare il submit.
   const foto = watch("foto");
 
+  /**
+   * Gestisce la selezione di un file immagine: lo comprime/ridimensiona
+   * lato client prima di scriverlo nel form, per restare sotto la soglia
+   * di dimensione accettata dal server senza dover fare un secondo giro
+   * di andata/ritorno in caso di rifiuto.
+   * @param event evento onChange dell'input file nascosto.
+   */
   async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -68,6 +91,8 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
     try {
       const dataUrl = await comprimiImmagine(file);
 
+      // Anche dopo la compressione lato client la soglia va rispettata:
+      // è la stessa verificata (di nuovo) lato server in FOTO_MAX_LENGTH.
       if (dataUrl.length > FOTO_MAX_LENGTH) {
         setErroreFoto("L'immagine è troppo grande anche dopo la compressione. Prova con un'altra foto.");
         return;
@@ -82,6 +107,12 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
     }
   }
 
+  /**
+   * Invia i dati del form: POST per un nuovo animale, PATCH per uno
+   * esistente. La scelta dipende solo dalla presenza di animaleIniziale.
+   * @param data dati già validati da Zod (via zodResolver), pronti per
+   *   essere serializzati e inviati.
+   */
   async function onSubmit(data: AnimaleInput) {
     setErroreServer(null);
 
@@ -155,6 +186,10 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
         </label>
         <select
           id="sesso"
+          // setValueAs converte la stringa vuota (opzione "Non noto") in
+          // undefined, coerente con Sesso essere .optional() nello schema
+          // Zod: senza questo, "" verrebbe rifiutato come valore non
+          // valido dell'enum invece di essere trattato come "non specificato".
           {...register("sesso", { setValueAs: (v) => (v === "" ? undefined : (v as Sesso)) })}
           className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
         >
@@ -170,6 +205,9 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
         </label>
         <select
           id="sterilizzato"
+          // Stessa logica del select Sesso, ma per un booleano tri-stato:
+          // "" → undefined (non specificato), altrimenti confronto con la
+          // stringa "true" per ottenere un vero booleano JS.
           {...register("sterilizzato", {
             setValueAs: (v) => (v === "" ? undefined : v === "true"),
           })}
@@ -243,6 +281,10 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
             className="mb-3 h-48 w-full rounded-md object-cover"
           />
         )}
+        {/* Input file nascosto (className="hidden"): resta associato alla
+            label tramite id/htmlFor per l'accessibilità, ma l'apertura
+            del selettore file passa dal bottone sotto, più chiaro per
+            chi non è pratico di form web. */}
         <input
           ref={fileInputRef}
           id="foto"

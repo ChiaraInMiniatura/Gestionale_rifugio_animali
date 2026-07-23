@@ -1,3 +1,7 @@
+// Pagina pubblica di login: usa signIn("credentials", { redirect: false })
+// invece del redirect automatico di Auth.js, per poter mostrare l'errore
+// (es. account non approvato) restando sulla stessa pagina.
+
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -30,10 +34,15 @@ export default function LoginPage() {
     });
 
     if (res?.error) {
+      // Il messaggio (es. "Account non ancora approvato") arriva dal
+      // provider Credentials configurato in src/lib/auth.ts.
       setErroreServer(res.error);
       return;
     }
 
+    // router.refresh() forza il re-fetch dei server component (es.
+    // header con NavLinks) così da riflettere subito la nuova sessione,
+    // cosa che router.push da solo non garantirebbe.
     router.push("/");
     router.refresh();
   }

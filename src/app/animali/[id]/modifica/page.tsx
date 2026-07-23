@@ -1,3 +1,7 @@
+// Pagina di modifica: stesso AnimaleForm della creazione, ma con
+// animaleIniziale valorizzato — è questo a far scegliere al form la
+// modalità PATCH e a precompilare tutti i campi.
+
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { AnimaleForm } from "@/components/animali/animale-form";

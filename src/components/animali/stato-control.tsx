@@ -1,3 +1,9 @@
+// Controllo ADMIN-only per il cambio stato di un animale, mostrato nel
+// dettaglio (vedi [id]/page.tsx). La selezione nello <select> è separata
+// dal salvataggio effettivo: cambiare la select non chiama subito l'API,
+// serve un click esplicito su "Salva", per evitare che uno stato critico
+// (es. "Adottato") venga impostato per errore con un solo cambio di menu.
+
 "use client";
 
 import { useState } from "react";
@@ -15,6 +21,9 @@ export function StatoControl({
   statoAttuale: StatoAnimale;
 }) {
   const router = useRouter();
+  // "stato" è la selezione corrente nel form, non ancora salvata:
+  // statoAttuale resta il valore confermato sul server, usato per capire
+  // se c'è una modifica pendente (vedi disabled del bottone Salva sotto).
   const [stato, setStato] = useState(statoAttuale);
   const [salvataggio, setSalvataggio] = useState(false);
   const [errore, setErrore] = useState<string | null>(null);
@@ -27,6 +36,8 @@ export function StatoControl({
       const res = await fetch(`/api/animali/${animaleId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
+        // Solo "stato" nel body: la rotta API rifiuta la richiesta se
+        // mischiata ad altri campi (vedi CAMPI_BASE in [id]/route.ts).
         body: JSON.stringify({ stato }),
       });
 
@@ -62,6 +73,9 @@ export function StatoControl({
         <button
           type="button"
           onClick={handleSalva}
+          // Disabilitato se non c'è nulla da salvare (selezione invariata):
+          // evita chiamate API inutili e comunica visivamente che non ci
+          // sono modifiche pendenti.
           disabled={salvataggio || stato === statoAttuale}
           className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-300"
         >

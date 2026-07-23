@@ -1,3 +1,8 @@
+// Lista interattiva delle richieste di registrazione in attesa, usata
+// dalla pagina /admin. Riceve i dati iniziali dal server component
+// (initialUsers) e da lì gestisce approvazione/rifiuto lato client,
+// aggiornando la lista in place senza un refresh completo della pagina.
+
 "use client";
 
 import { useState } from "react";
@@ -33,6 +38,9 @@ export function PendingUsers({ initialUsers }: { initialUsers: PendingUser[] }) 
         return;
       }
 
+      // Rimozione ottimistica dalla lista locale, più router.refresh()
+      // per riallineare eventuali altri dati derivati dal server (es.
+      // contatori altrove nell'app).
       setUsers((prev) => prev.filter((u) => u.id !== id));
       router.refresh();
     } catch {
@@ -43,6 +51,8 @@ export function PendingUsers({ initialUsers }: { initialUsers: PendingUser[] }) 
   }
 
   function handleRifiuta(user: PendingUser) {
+    // Conferma esplicita prima di un'azione distruttiva e irreversibile
+    // (il rifiuto elimina l'account, non lo marca solo come "rifiutato").
     const confermato = window.confirm(
       `Rifiutare definitivamente la richiesta di ${user.email}? L'operazione elimina l'account e non è annullabile.`
     );

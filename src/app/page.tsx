@@ -1,3 +1,9 @@
+// Pagina "/": ancora il template di default generato da create-next-app,
+// non personalizzata per il dominio del rifugio. Resta pubblica (non
+// coperta dal proxy: vedi matcher in src/proxy.ts) e serve solo da punto
+// di ingresso generico; le pagine applicative vere sono /login,
+// /registrazione, /dashboard, /animali, /admin.
+
 import Image from "next/image";
 
 export default function Home() {

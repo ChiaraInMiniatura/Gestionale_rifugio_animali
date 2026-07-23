@@ -1,3 +1,7 @@
+// Pagina pubblica di registrazione: form client per richiedere un nuovo
+// account VOLONTARIA. Non fa login automatico dopo l'invio: l'account
+// resta in attesa finché un ADMIN non lo approva (vedi /admin).
+
 "use client";
 
 import { useState } from "react";
@@ -9,6 +13,9 @@ import {
 } from "@/lib/validations/registrazione";
 
 export default function RegistrazionePage() {
+  // "inviata" distingue il form dalla schermata di conferma dopo il
+  // successo, senza bisogno di un redirect (non c'è nulla da vedere
+  // subito dopo: l'account non è ancora utilizzabile).
   const [inviata, setInviata] = useState(false);
   const [erroreServer, setErroreServer] = useState<string | null>(null);
 
@@ -17,6 +24,9 @@ export default function RegistrazionePage() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<RegistrazioneInput>({
+    // Stesso schema Zod della rotta API: gli errori di validazione
+    // mostrati qui rispecchiano esattamente quelli che il server
+    // applicherebbe comunque, anche se qualcuno bypassasse questo form.
     resolver: zodResolver(registrazioneSchema),
   });
 

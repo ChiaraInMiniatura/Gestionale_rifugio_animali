@@ -1,3 +1,8 @@
+// Link di navigazione nell'header: visibili solo se c'è una sessione, e
+// il link "Amministrazione" solo per il ruolo ADMIN. Questo filtro è solo
+// estetico (nasconde link non pertinenti): l'accesso reale alle pagine è
+// comunque riverificato dal proxy e dalle pagine stesse.
+
 "use client";
 
 import Link from "next/link";

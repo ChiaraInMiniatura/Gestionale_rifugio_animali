@@ -1,3 +1,7 @@
+// Root layout dell'App Router: avvolge ogni pagina con i Provider globali
+// (sessione Auth.js, React Query) e un header comune con navigazione e
+// logout, sempre visibile indipendentemente dalla rotta.
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -31,8 +35,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* Providers: qui vivono SessionProvider (Auth.js) e QueryClientProvider
+            (React Query), condivisi da tutte le pagine client sotto. */}
         <Providers>
           <header className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
+            {/* NavLinks mostra/nasconde i link in base a sessione e ruolo
+                dell'utente corrente (vedi src/components/nav-links.tsx). */}
             <NavLinks />
             <LogoutButton />
           </header>

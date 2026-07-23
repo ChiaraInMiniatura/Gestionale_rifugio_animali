@@ -1,3 +1,7 @@
+// Schema Zod per il form di login: validazione minimale (formato email,
+// password non vuota), perché il controllo vero delle credenziali
+// avviene comunque lato server nell'authorize() di src/lib/auth.ts.
+
 import { z } from "zod";
 
 export const loginSchema = z.object({

@@ -1,3 +1,8 @@
+// Dettaglio di un animale: unica pagina che mostra la foto (grande, in
+// fondo) e i controlli riservati agli ADMIN (cambio stato, eliminazione).
+// Fallback testuale esplicito per ogni campo opzionale, così l'assenza
+// di un dato è sempre comunicata, mai lasciata come spazio vuoto.
+
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -19,6 +24,8 @@ export default async function AnimaleDettaglioPage({
     notFound();
   }
 
+  // Sessione e animale recuperati in parallelo: sono indipendenti, non
+  // c'è motivo di attendere l'uno prima di iniziare l'altro.
   const [session, animale] = await Promise.all([
     getServerSession(authOptions),
     prisma.animale.findUnique({ where: { id: animaleId } }),
@@ -53,6 +60,8 @@ export default async function AnimaleDettaglioPage({
           <div>
             <dt className="font-medium text-zinc-900 dark:text-zinc-50">Sesso</dt>
             <dd>
+              {/* animale.sesso è opzionale (null = non noto): nessun
+                  terzo valore nell'enum, la mancanza è gestita qui. */}
               {animale.sesso === "MASCHIO"
                 ? "Maschio"
                 : animale.sesso === "FEMMINA"
@@ -63,6 +72,8 @@ export default async function AnimaleDettaglioPage({
           <div>
             <dt className="font-medium text-zinc-900 dark:text-zinc-50">Sterilizzato</dt>
             <dd>
+              {/* Booleano nullable: tre stati distinti (Sì/No/Non
+                  specificato), non un semplice truthy check. */}
               {animale.sterilizzato === true
                 ? "Sì"
                 : animale.sterilizzato === false
@@ -91,6 +102,8 @@ export default async function AnimaleDettaglioPage({
         <div className="mt-6 border-t border-zinc-200 pt-4 dark:border-zinc-800">
           <p className="mb-2 text-sm font-medium text-zinc-900 dark:text-zinc-50">Stato</p>
           {isAdmin ? (
+            // Solo l'ADMIN vede il controllo interattivo (select + Salva);
+            // le altre volontarie vedono lo stato in sola lettura.
             <StatoControl animaleId={animale.id} statoAttuale={animale.stato} />
           ) : (
             <p className="text-sm text-zinc-700 dark:text-zinc-300">

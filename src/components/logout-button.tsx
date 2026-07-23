@@ -1,3 +1,7 @@
+// Bottone di logout mostrato nell'header (vedi src/app/layout.tsx): si
+// nasconde da solo se non c'è sessione, così non serve un controllo
+// esplicito nel layout che lo include.
+
 "use client";
 
 import { signOut, useSession } from "next-auth/react";

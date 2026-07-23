@@ -1,3 +1,8 @@
+// Pannello ADMIN-only: elenco delle richieste di registrazione in attesa
+// di approvazione. Il controllo ruolo qui è un secondo livello di difesa
+// (oltre al proxy, che già blocca i non-ADMIN su /admin): una pagina
+// server component non deve fidarsi solo del middleware a monte.
+
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -29,6 +34,8 @@ export default async function AdminPage() {
       <PendingUsers
         initialUsers={pendingUsers.map((u) => ({
           ...u,
+          // Date non serializzabili come props a un client component:
+          // vanno convertite in stringa ISO prima di passarle giù.
           createdAt: u.createdAt.toISOString(),
         }))}
       />

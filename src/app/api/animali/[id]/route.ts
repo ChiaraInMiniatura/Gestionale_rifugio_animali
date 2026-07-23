@@ -1,10 +1,27 @@
+// Rotta per il singolo animale: GET (dettaglio), PATCH (due usi distinti:
+// modifica dati di base oppure cambio stato) e DELETE (eliminazione,
+// ADMIN-only). Il PATCH accetta "stato" oppure gli altri campi in
+// CAMPI_BASE, mai entrambi nella stessa richiesta: sono due permessi
+// diversi (chiunque approvato vs solo ADMIN) e mescolarli renderebbe
+// ambiguo cosa autorizzare.
+
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessioneApprovata } from "@/lib/api-auth";
 import { animaleSchema, normalizzaAnimale, statoAnimaleSchema } from "@/lib/validations/animale";
 
+// Elenco dei campi "dati di base": usato per rilevare se una richiesta
+// PATCH sta toccando altro oltre allo stato, e quindi va rifiutata se
+// insieme è presente anche "stato" (vedi haCampoStato/haAltriCampi sotto).
 const CAMPI_BASE = ["nome", "specie", "razza", "dataNascita", "descrizione", "note", "sesso", "sterilizzato"];
 
+/**
+ * Restituisce il dettaglio completo di un animale (foto inclusa).
+ * @param request non usato, presente per la firma del route handler.
+ * @param params contiene l'id dell'animale da parametro di rotta dinamica.
+ * @returns 200 con l'animale; 403 se la sessione non è valida/approvata;
+ *   400/404 per id non valido o animale inesistente.
+ */
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -28,6 +45,18 @@ export async function GET(
   return NextResponse.json(animale);
 }
 
+/**
+ * Aggiorna un animale: due modalità mutuamente esclusive nello stesso
+ * body, distinte dalla presenza del campo "stato".
+ * - Con "stato": cambia solo lo stato di adozione (ADMIN-only).
+ * - Senza "stato": aggiorna i campi di CAMPI_BASE (chiunque approvato).
+ * @param request corpo JSON da rivalidare con lo schema Zod pertinente al
+ *   ramo (statoAnimaleSchema oppure animaleSchema).
+ * @param params contiene l'id dell'animale da modificare.
+ * @returns 200 con l'animale aggiornato; 400 per body non valido, Zod
+ *   fallito, o "stato" misto ad altri campi; 403 per sessione non valida
+ *   o (nel ramo stato) ruolo diverso da ADMIN; 404 se non esiste.
+ */
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -67,6 +96,9 @@ export async function PATCH(
     Object.prototype.hasOwnProperty.call(body, campo)
   );
 
+  // Rifiuto esplicito del caso misto: evita che una singola richiesta
+  // aggiri il controllo ruolo aggiungendo campi extra insieme a "stato",
+  // o che un cambio stato modifichi "di striscio" altri dati.
   if (haCampoStato && haAltriCampi) {
     return NextResponse.json(
       {
@@ -106,6 +138,9 @@ export async function PATCH(
     );
   }
 
+  // Stessa normalizzazione usata dal POST di creazione: garantisce che
+  // stringhe vuote/date testuali diventino null/Date in modo identico nei
+  // due punti in cui si scrive un Animale.
   const animale = await prisma.animale.update({
     where: { id: animaleId },
     data: normalizzaAnimale(parsed.data),
@@ -113,6 +148,13 @@ export async function PATCH(
   return NextResponse.json(animale);
 }
 
+/**
+ * Elimina definitivamente un animale (azione distruttiva, ADMIN-only).
+ * @param request non usato, presente per la firma del route handler.
+ * @param params contiene l'id dell'animale da eliminare.
+ * @returns 200 con l'id eliminato; 403 se la sessione non è valida o il
+ *   ruolo non è ADMIN; 400/404 per id non valido o inesistente.
+ */
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

@@ -1,7 +1,14 @@
+// Pagina protetta (vedi matcher in src/proxy.ts): raggiungibile da
+// qualunque utente loggato e approvato, senza distinzione di ruolo.
+// Placeholder minimale: mostra solo un saluto e il ruolo dell'utente.
+
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 export default async function DashboardPage() {
+  // Il proxy ha già verificato sessione/approvazione a monte; qui si
+  // rilegge la sessione solo per mostrare nome e ruolo, non per
+  // riautorizzare l'accesso.
   const session = await getServerSession(authOptions);
 
   return (

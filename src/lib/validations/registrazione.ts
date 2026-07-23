@@ -1,3 +1,7 @@
+// Schema Zod condiviso tra il form client di registrazione (pagina
+// /registrazione) e la rotta API POST /api/registrazione: stessa
+// validazione usata due volte, mai duplicata a mano nei due punti.
+
 import { z } from "zod";
 
 export const registrazioneSchema = z.object({

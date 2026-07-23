@@ -3,59 +3,112 @@
 
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
+// Questo file è la fonte di verità dello schema del database: da qui Prisma
+// genera sia il client TypeScript tipizzato (src/generated/prisma, gitignored,
+// da rigenerare con `npx prisma generate` dopo ogni pull) sia le migrazioni
+// SQL versionate in prisma/migrations/.
+
+// Generator "prisma-client" (Prisma 7): sostituisce il vecchio
+// "prisma-client-js". L'output non va mai modificato a mano.
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
 }
 
+// La stringa di connessione arriva da DATABASE_URL, definita in .env
+// (mai committato nel repository).
 datasource db {
   provider = "postgresql"
 }
 
+/// Ruoli applicativi: VOLONTARIA opera quotidianamente sui dati (animali,
+/// cartelle sanitarie); ADMIN inoltre approva i nuovi account e gestisce
+/// i cambi di stato delle adozioni. Un nuovo utente nasce sempre VOLONTARIA.
 enum Role {
+  /// Ruolo di default per i nuovi account.
   VOLONTARIA
+  /// Ruolo con permessi aggiuntivi: approvazione account, cambio stato
+  /// animali, eliminazioni.
   ADMIN
 }
 
+/// Account di accesso all'applicazione (volontarie e admin del rifugio).
 model User {
   id        Int      @id @default(autoincrement())
+  /// Univoca: usata come identificativo di login.
   email     String   @unique
+  /// Hash bcrypt, mai testo in chiaro: la verifica avviene solo lato
+  /// server, nel provider Credentials di Auth.js.
   password  String
   name      String
+  /// Determina i permessi; default VOLONTARIA per i nuovi account.
   role      Role     @default(VOLONTARIA)
+  /// Gate di sicurezza: un nuovo utente nasce con approved=false e non
+  /// può accedere finché un ADMIN non lo approva esplicitamente. Questo
+  /// valore viene sempre riletto dal DB ad ogni richiesta (mai fidato
+  /// dal solo JWT di sessione), così una revoca è immediata.
   approved  Boolean  @default(false)
   createdAt DateTime @default(now())
 }
 
+/// Ciclo di vita dell'animale nel rifugio. Il cambio di stato è
+/// un'operazione separata dagli altri campi anagrafici (vedi CAMPI_BASE
+/// in src/app/api/animali/[id]/route.ts) ed è riservata agli ADMIN.
 enum StatoAnimale {
+  /// Stato di default alla creazione: l'animale è al rifugio e adottabile.
   DISPONIBILE
+  /// L'animale è temporaneamente in affido, non ancora adottato.
   IN_AFFIDO
+  /// L'animale è stato adottato definitivamente.
   ADOTTATO
 }
 
+/// Pensato per un'estensione futura oltre ai soli cani: oggi il rifugio
+/// ospita solo cani, ma il modello è già pronto per altre specie.
 enum Specie {
+  /// Valore di default per i nuovi animali.
   CANE
   GATTO
   ALTRO
 }
 
+/// Sesso biologico dell'animale. Non include un valore "non noto": quel
+/// caso è rappresentato da null sul campo opzionale Sesso? del modello
+/// Animale, per non sporcare l'enum con uno pseudo-stato.
 enum Sesso {
   MASCHIO
   FEMMINA
 }
 
+/// Scheda di un animale ospitato nel rifugio: dati anagrafici, stato di
+/// adozione e foto opzionale.
 model Animale {
   id           Int          @id @default(autoincrement())
   nome         String
+  /// Default CANE: coerente con il fatto che oggi il rifugio ospita
+  /// solo cani, pur lasciando aperta l'estensione ad altre specie.
   specie       Specie       @default(CANE)
   razza        String?
+  /// Opzionale e indicativa se non nota con precisione: da qui si
+  /// calcola l'età (src/lib/eta.ts), mai salvata come valore a parte
+  /// per evitare che diventi disallineata nel tempo.
   dataNascita  DateTime?
   descrizione  String?
   note         String?
+  /// Data URL base64 (non un path a storage esterno): scelta semplice,
+  /// ma limitata dalla soglia FOTO_MAX_LENGTH validata lato Zod, oltre
+  /// alla compressione già applicata lato client prima dell'invio.
   foto         String?
+  /// Opzionale: null = non noto, non un terzo valore dell'enum Sesso
+  /// (vedi sopra).
   sesso        Sesso?
+  /// Booleano nullable per rappresentare tre stati: true / false / non
+  /// specificato (null) — stessa scelta fatta per "sesso".
   sterilizzato Boolean?
+  /// Default DISPONIBILE; il cambio successivo è un'operazione ADMIN-only
+  /// separata dagli altri campi (vedi CAMPI_BASE in [id]/route.ts).
   stato        StatoAnimale @default(DISPONIBILE)
   createdAt    DateTime     @default(now())
+  /// Aggiornato automaticamente da Prisma ad ogni modifica del record.
   updatedAt    DateTime     @updatedAt
 }

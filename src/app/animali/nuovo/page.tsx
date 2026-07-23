@@ -1,3 +1,7 @@
+// Pagina di creazione: wrapper sottile attorno ad AnimaleForm, chiamato
+// senza animaleIniziale così il form sa di essere in modalità "nuovo"
+// (POST invece di PATCH, vedi src/components/animali/animale-form.tsx).
+
 import { AnimaleForm } from "@/components/animali/animale-form";
 
 export default function NuovoAnimalePage() {

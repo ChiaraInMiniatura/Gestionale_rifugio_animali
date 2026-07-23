@@ -1,3 +1,8 @@
+// Elenco animali (/animali): aperta a chiunque loggato e approvato (il
+// controllo vero e proprio è nel proxy). Mostra solo i campi essenziali
+// per una lista leggera: niente foto, sesso o sterilizzato qui, riservati
+// al dettaglio del singolo animale.
+
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { calcolaEta } from "@/lib/eta";

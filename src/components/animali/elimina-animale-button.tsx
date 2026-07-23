@@ -1,3 +1,8 @@
+// Bottone di eliminazione animale, usato solo nel dettaglio ADMIN (vedi
+// [id]/page.tsx, che lo mostra solo se isAdmin). Il controllo ruolo vero
+// e proprio resta comunque nella rotta API DELETE: questo componente non
+// è un livello di sicurezza, solo l'interfaccia per chi può già vederlo.
+
 "use client";
 
 import { useState } from "react";
@@ -9,6 +14,9 @@ export function EliminaAnimaleButton({ animaleId, nome }: { animaleId: number; n
   const [errore, setErrore] = useState<string | null>(null);
 
   async function handleElimina() {
+    // Conferma esplicita: azione distruttiva e irreversibile, pensata
+    // per utenti finali non tecnici (anche anziani) che non devono poter
+    // eliminare un animale con un click accidentale.
     const confermato = window.confirm(
       `Eliminare definitivamente ${nome}? L'operazione non è annullabile.`
     );
