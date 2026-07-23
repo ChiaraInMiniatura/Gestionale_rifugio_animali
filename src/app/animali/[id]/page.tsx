@@ -51,6 +51,26 @@ export default async function AnimaleDettaglioPage({
             <dd>{animale.razza ?? "Non nota"}</dd>
           </div>
           <div>
+            <dt className="font-medium text-zinc-900 dark:text-zinc-50">Sesso</dt>
+            <dd>
+              {animale.sesso === "MASCHIO"
+                ? "Maschio"
+                : animale.sesso === "FEMMINA"
+                  ? "Femmina"
+                  : "Non noto"}
+            </dd>
+          </div>
+          <div>
+            <dt className="font-medium text-zinc-900 dark:text-zinc-50">Sterilizzato</dt>
+            <dd>
+              {animale.sterilizzato === true
+                ? "Sì"
+                : animale.sterilizzato === false
+                  ? "No"
+                  : "Non specificato"}
+            </dd>
+          </div>
+          <div>
             <dt className="font-medium text-zinc-900 dark:text-zinc-50">Età</dt>
             <dd>{calcolaEta(animale.dataNascita) ?? "Non nota"}</dd>
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,6 +31,7 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
   const [erroreServer, setErroreServer] = useState<string | null>(null);
   const [erroreFoto, setErroreFoto] = useState<string | null>(null);
   const [elaborazioneFoto, setElaborazioneFoto] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -174,7 +175,7 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
           })}
           className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
         >
-          <option value="">Non so</option>
+          <option value="">Non specificato</option>
           <option value="true">Sì</option>
           <option value="false">No</option>
         </select>
@@ -243,13 +244,22 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
           />
         )}
         <input
+          ref={fileInputRef}
           id="foto"
           type="file"
           accept="image/*"
           disabled={elaborazioneFoto}
           onChange={handleFileChange}
-          className="w-full text-sm text-zinc-700 dark:text-zinc-300"
+          className="hidden"
         />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={elaborazioneFoto}
+          className="rounded-full border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
+        >
+          {foto ? "Cambia foto" : "Carica foto"}
+        </button>
         {elaborazioneFoto && (
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-500">Elaborazione immagine...</p>
         )}
