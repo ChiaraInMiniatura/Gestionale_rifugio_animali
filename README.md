@@ -1,6 +1,6 @@
-# Rifugio – Gestionale
+# Frida
 
-Gestionale web per un rifugio per cani, ad uso delle volontarie e degli admin del rifugio.
+Gestionale web per un rifugio per cani, ad uso delle volontarie e degli admin del rifugio. Pensato per essere usato soprattutto da smartphone, con caratteri e bottoni grandi e un design pensato per volontarie anziane e non tecniche.
 
 ## Cosa fa
 
@@ -19,7 +19,7 @@ Gestionale web per un rifugio per cani, ad uso delle volontarie e degli admin de
 - Sesso (Maschio / Femmina / non noto) e stato di sterilizzazione (Sì / No / non specificato) dell'animale, entrambi opzionali, mostrati nel dettaglio con fallback esplicito quando non indicati
 - Foto dell'animale (opzionale): caricata tramite bottone "Carica foto" (o "Cambia foto" se già presente, al posto del selettore file grezzo), compressa e ridimensionata lato client (max 1200px, JPEG 80%) prima del salvataggio come data URL base64 nel database. Visibile solo nella pagina di dettaglio (in fondo, a piena larghezza su mobile), mai nell'elenco per non appesantirlo. Solo immagini, con limite di dimensione verificato anche lato server
 - Cartella clinica per ogni animale (sezione dedicata nel dettaglio): eventi di tipo vaccino, antiparassitario, visita veterinaria o terapia, ciascuno con data (orario incluso, utile in particolare per le visite) e un'eventuale scadenza per il prossimo richiamo; per le terapie continuative, un periodo con data di fine facoltativa ("in corso" se non impostata). Creazione, modifica ed eliminazione aperte a chiunque loggato e approvato (nessuna restrizione di ruolo, a differenza dei dati anagrafici dell'animale), sempre con un popup di conferma esplicito prima di scrivere, con testo specifico per tipo di evento e per data futura o passata
-- Scadenze evidenziate con un colore (arancione entro 14 giorni, rosso se già passate): sia nel dettaglio del singolo animale sia in una vista aggregata su tutto il rifugio (`/animali/scadenze`, link "Scadenze" in header), divisa in "Scadenze imminenti" (entro 14 giorni o già passate) e "Scadenze future" (oltre i 14 giorni, mostrate senza colore di allerta)
+- Scadenze evidenziate con un colore (arancione entro 14 giorni, rosso e in grassetto se già passate — il grassetto non fa affidamento solo sul colore, più facile da distinguere per chi ha difficoltà a percepire le tonalità): sia nel dettaglio del singolo animale sia in una vista aggregata su tutto il rifugio (`/animali/scadenze`, link "Scadenze" in header), divisa in "Scadenze imminenti" (entro 14 giorni o già passate) e "Scadenze future" (oltre i 14 giorni, mostrate senza colore di allerta)
 - Gli appuntamenti non ricorrenti (vaccini, antiparassitari, visite) restano segnalati come promemoria finché non vengono confermati come avvenuti: bottone dedicato "Segna come confermato" / "Annulla conferma" nel dettaglio dell'animale, senza popup (azione reversibile)
 - Dashboard (`/dashboard`): sezione "Farmaci di oggi" con l'elenco delle terapie continuative attive nella giornata corrente, su tutti gli animali del rifugio
 

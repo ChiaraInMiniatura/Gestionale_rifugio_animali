@@ -88,7 +88,7 @@ export function PendingUsers({ initialUsers }: { initialUsers: PendingUser[] }) 
               <p className="text-sm text-zinc-600 dark:text-zinc-400">
                 {user.email}
               </p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-500">
+              <p className="text-xs text-zinc-700 dark:text-zinc-300">
                 Registrata il {format(new Date(user.createdAt), "d MMMM yyyy", { locale: it })}
               </p>
             </div>
@@ -98,7 +98,7 @@ export function PendingUsers({ initialUsers }: { initialUsers: PendingUser[] }) 
                 type="button"
                 disabled={loadingId === user.id}
                 onClick={() => handleAzione(user.id, "approve")}
-                className="rounded-full bg-zinc-900 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-300"
+                className="rounded-full bg-teal-700 px-4 py-1.5 text-sm font-medium text-white transition hover:scale-105 hover:bg-teal-600 active:scale-95 active:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
               >
                 Approva
               </button>
@@ -106,7 +106,7 @@ export function PendingUsers({ initialUsers }: { initialUsers: PendingUser[] }) 
                 type="button"
                 disabled={loadingId === user.id}
                 onClick={() => handleRifiuta(user)}
-                className="rounded-full border border-red-300 px-4 py-1.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
+                className="rounded-full border border-red-300 px-4 py-1.5 text-sm font-medium text-red-700 transition hover:scale-105 hover:bg-red-50 active:scale-95 active:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950 dark:active:bg-red-900"
               >
                 Rifiuta
               </button>

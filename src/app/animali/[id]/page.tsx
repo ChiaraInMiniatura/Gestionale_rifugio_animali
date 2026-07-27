@@ -49,15 +49,15 @@ export default async function AnimaleDettaglioPage({
   const isAdmin = session?.user.role === "ADMIN";
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-6 bg-zinc-50 px-4 py-10 dark:bg-black">
+    <div className="flex flex-1 flex-col items-center gap-6 bg-teal-50/40 px-4 py-10 dark:bg-[#04120f]">
       <div className="w-full max-w-lg rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+          <h1 className="text-xl font-semibold capitalize text-zinc-900 dark:text-zinc-50">
             {animale.nome}
           </h1>
           <Link
             href={`/animali/${animale.id}/modifica`}
-            className="text-sm font-medium text-zinc-700 underline dark:text-zinc-300"
+            className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
           >
             Modifica dati
           </Link>
@@ -130,14 +130,14 @@ export default async function AnimaleDettaglioPage({
             </p>
             <Link
               href={`/animali/${animale.id}/eventi/nuovo`}
-              className="text-sm font-medium text-zinc-700 underline dark:text-zinc-300"
+              className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
             >
               Aggiungi evento
             </Link>
           </div>
 
           {animale.eventiClinici.length === 0 ? (
-            <p className="text-sm text-zinc-500 dark:text-zinc-500">
+            <p className="text-sm text-zinc-700 dark:text-zinc-300">
               Nessun evento clinico registrato.
             </p>
           ) : (
@@ -162,7 +162,7 @@ export default async function AnimaleDettaglioPage({
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="font-medium text-zinc-900 dark:text-zinc-50">
-                          {TIPO_EVENTO_LABEL[evento.tipo]} — {evento.nomeSpecifico}
+                          {TIPO_EVENTO_LABEL[evento.tipo]} — <span className="capitalize">{evento.nomeSpecifico}</span>
                         </p>
 
                         {evento.ricorrenza === "GIORNALIERA" ? (
@@ -202,14 +202,14 @@ export default async function AnimaleDettaglioPage({
                         )}
 
                         {evento.note && (
-                          <p className="mt-1 text-zinc-500 dark:text-zinc-500">{evento.note}</p>
+                          <p className="mt-1 text-zinc-700 dark:text-zinc-300">{evento.note}</p>
                         )}
                       </div>
 
-                      <div className="flex shrink-0 flex-col items-end gap-1">
+                      <div className="flex shrink-0 flex-col items-end gap-2">
                         <Link
                           href={`/animali/${animale.id}/eventi/${evento.id}/modifica`}
-                          className="text-xs font-medium text-zinc-700 underline dark:text-zinc-300"
+                          className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
                         >
                           Modifica
                         </Link>
@@ -258,7 +258,7 @@ export default async function AnimaleDettaglioPage({
               className="min-h-[50vh] w-full rounded-md object-cover"
             />
           ) : (
-            <div className="flex min-h-[50vh] w-full items-center justify-center rounded-md bg-zinc-100 text-sm text-zinc-500 dark:bg-zinc-900 dark:text-zinc-500">
+            <div className="flex min-h-[50vh] w-full items-center justify-center rounded-md bg-zinc-100 text-sm text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
               Nessuna foto disponibile
             </div>
           )}

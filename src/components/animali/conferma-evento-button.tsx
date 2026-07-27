@@ -60,8 +60,8 @@ export function ConfermaEventoButton({
           confermato
             ? // Azione secondaria/discreta: non deve confondersi con
               // un'azione distruttiva come l'eliminazione (niente rosso).
-              "rounded-full border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-900"
-            : "rounded-full border border-emerald-300 px-3 py-1 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-emerald-800 dark:text-emerald-400 dark:hover:bg-emerald-950"
+              "rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-600 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+            : "rounded-full border border-emerald-300 px-3 py-1.5 text-sm font-medium text-emerald-700 transition hover:scale-105 hover:bg-emerald-50 active:scale-95 active:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-emerald-800 dark:text-emerald-400 dark:hover:bg-emerald-950 dark:active:bg-emerald-900"
         }
       >
         {confermato ? "Annulla conferma" : "Segna come confermato"}

@@ -130,14 +130,18 @@ export function calcolaStatoEvento(
 }
 
 /**
- * Classi Tailwind per il colore del testo di una scadenza: unica fonte di
- * verità, usata sia nel dettaglio animale sia nella vista aggregata
- * /animali/scadenze, così i due colori (rosso/arancione) restano coerenti.
+ * Classi Tailwind per il colore (ed eventuale peso) del testo di una
+ * scadenza: unica fonte di verità, usata sia nel dettaglio animale sia
+ * nella vista aggregata /animali/scadenze, così restano coerenti ovunque.
+ * "Scaduto" è anche in grassetto, non solo rosso: per un pubblico anziano
+ * il colore da solo (soprattutto rosso vs arancione) può non bastare a
+ * distinguere i due stati, il grassetto è un secondo segnale ridondante
+ * che non dipende dalla percezione del colore.
  * @param stato esito di calcolaStatoScadenza o calcolaStatoEvento.
  * @returns classi Tailwind (light + dark) da applicare al testo.
  */
 export function coloreScadenza(stato: StatoScadenza): string {
-  if (stato === "scaduto") return "text-red-600 dark:text-red-400";
+  if (stato === "scaduto") return "font-bold text-red-600 dark:text-red-400";
   if (stato === "in_scadenza") return "text-orange-600 dark:text-orange-400";
   return "text-zinc-700 dark:text-zinc-300";
 }

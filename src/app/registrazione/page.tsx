@@ -50,7 +50,7 @@ export default function RegistrazionePage() {
 
   if (inviata) {
     return (
-      <div className="flex flex-1 items-center justify-center bg-zinc-50 px-4 dark:bg-black">
+      <div className="flex flex-1 items-center justify-center bg-teal-50/40 px-4 dark:bg-[#04120f]">
         <p className="max-w-md text-center text-lg text-zinc-800 dark:text-zinc-200">
           Registrazione inviata. Il tuo account è in attesa di approvazione.
         </p>
@@ -59,7 +59,7 @@ export default function RegistrazionePage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-zinc-50 px-4 dark:bg-black">
+    <div className="flex flex-1 items-center justify-center bg-teal-50/40 px-4 dark:bg-[#04120f]">
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
@@ -121,7 +121,7 @@ export default function RegistrazionePage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-full bg-zinc-900 px-5 py-2.5 font-medium text-white transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          className="w-full rounded-full bg-teal-700 px-5 py-2.5 font-medium text-white transition hover:scale-[1.02] hover:bg-teal-600 active:scale-95 active:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
         >
           {isSubmitting ? "Invio in corso..." : "Registrati"}
         </button>

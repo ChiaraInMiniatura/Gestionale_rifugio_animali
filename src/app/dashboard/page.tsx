@@ -26,7 +26,7 @@ export default async function DashboardPage() {
   const farmaciOggi = terapieGiornaliere.filter((evento) => terapiaAttivaOggi(evento));
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-8 bg-zinc-50 px-4 py-10 dark:bg-black">
+    <div className="flex flex-1 flex-col items-center gap-8 bg-teal-50/40 px-4 py-10 dark:bg-[#04120f]">
       <div className="text-center">
         <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
           Benvenuta, {session?.user.name}
@@ -51,12 +51,12 @@ export default async function DashboardPage() {
               <li key={evento.id}>
                 <Link
                   href={`/animali/${evento.animale.id}`}
-                  className="flex items-center justify-between gap-4 p-4 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                  className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
                 >
-                  <span className="font-medium text-zinc-900 dark:text-zinc-50">
+                  <span className="font-medium capitalize text-zinc-900 dark:text-zinc-50">
                     {evento.animale.nome}
                   </span>
-                  <span className="text-sm text-zinc-600 dark:text-zinc-400">
+                  <span className="text-sm capitalize text-zinc-600 dark:text-zinc-400">
                     {evento.nomeSpecifico}
                   </span>
                 </Link>

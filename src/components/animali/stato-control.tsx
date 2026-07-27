@@ -77,7 +77,7 @@ export function StatoControl({
           // evita chiamate API inutili e comunica visivamente che non ci
           // sono modifiche pendenti.
           disabled={salvataggio || stato === statoAttuale}
-          className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          className="rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white transition hover:scale-105 hover:bg-teal-600 active:scale-95 active:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
         >
           {salvataggio ? "Salvataggio..." : "Salva"}
         </button>

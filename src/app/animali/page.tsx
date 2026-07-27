@@ -55,14 +55,14 @@ export default async function AnimaliPage({
   });
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-6 bg-zinc-50 px-4 py-10 dark:bg-black">
+    <div className="flex flex-1 flex-col items-center gap-6 bg-teal-50/40 px-4 py-10 dark:bg-[#04120f]">
       <div className="flex w-full max-w-3xl items-center justify-between">
         <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
           Animali
         </h1>
         <Link
           href="/animali/nuovo"
-          className="rounded-full bg-zinc-900 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          className="inline-block rounded-full bg-teal-700 px-4 py-1.5 text-sm font-medium text-white transition hover:scale-105 hover:bg-teal-600 active:scale-95 active:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
         >
           Nuovo animale
         </Link>
@@ -134,7 +134,7 @@ export default async function AnimaliPage({
 
         <button
           type="submit"
-          className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          className="rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white transition hover:scale-105 hover:bg-teal-600 active:scale-95 active:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
         >
           Cerca
         </button>
@@ -142,7 +142,7 @@ export default async function AnimaliPage({
         {filtriAttivi && (
           <Link
             href="/animali"
-            className="text-sm font-medium text-zinc-700 underline dark:text-zinc-300"
+            className="inline-block text-sm font-medium text-zinc-700 underline transition hover:scale-105 active:scale-95 dark:text-zinc-300"
           >
             Azzera filtri
           </Link>
@@ -161,10 +161,10 @@ export default async function AnimaliPage({
             <li key={animale.id}>
               <Link
                 href={`/animali/${animale.id}`}
-                className="flex items-center justify-between gap-4 p-4 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
               >
                 <div>
-                  <p className="font-medium text-zinc-900 dark:text-zinc-50">
+                  <p className="font-medium capitalize text-zinc-900 dark:text-zinc-50">
                     {animale.nome}
                   </p>
                   <p className="text-sm text-zinc-600 dark:text-zinc-400">
@@ -172,7 +172,7 @@ export default async function AnimaliPage({
                     {calcolaEta(animale.dataNascita) ?? "età non nota"}
                   </p>
                 </div>
-                <span className="text-sm text-zinc-500 dark:text-zinc-500">
+                <span className="text-sm text-zinc-700 dark:text-zinc-300">
                   {STATO_LABEL[animale.stato]}
                 </span>
               </Link>

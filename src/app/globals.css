@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* Base più grande di quella di default (16px): scala automaticamente
+   tutte le utility Tailwind basate su rem (testi, padding, gap, margin)
+   in tutta l'app, pensata per utenti anziane su schermo di smartphone.
+   Valore unico e facile da ritoccare se serve più o meno effetto. */
+html {
+  font-size: 112.5%;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

@@ -298,12 +298,12 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={elaborazioneFoto}
-          className="rounded-full border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
+          className="rounded-full border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
         >
           {foto ? "Cambia foto" : "Carica foto"}
         </button>
         {elaborazioneFoto && (
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-500">Elaborazione immagine...</p>
+          <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">Elaborazione immagine...</p>
         )}
         {erroreFoto && (
           <p className="mt-1 text-sm text-red-600 dark:text-red-400">{erroreFoto}</p>
@@ -320,7 +320,7 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
       <button
         type="submit"
         disabled={isSubmitting || elaborazioneFoto}
-        className="w-full rounded-full bg-zinc-900 px-5 py-2.5 font-medium text-white transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-300"
+        className="w-full rounded-full bg-teal-700 px-5 py-2.5 font-medium text-white transition hover:scale-[1.02] hover:bg-teal-600 active:scale-95 active:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
       >
         {isSubmitting ? "Salvataggio in corso..." : "Salva"}
       </button>

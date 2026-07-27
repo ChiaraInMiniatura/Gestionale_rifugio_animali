@@ -60,7 +60,7 @@ export default async function ScadenzePage() {
     .sort((a, b) => a.data.getTime() - b.data.getTime());
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-6 bg-zinc-50 px-4 py-10 dark:bg-black">
+    <div className="flex flex-1 flex-col items-center gap-6 bg-teal-50/40 px-4 py-10 dark:bg-[#04120f]">
       <div className="w-full max-w-2xl">
         <h1 className="mb-6 text-xl font-semibold text-zinc-900 dark:text-zinc-50">
           Scadenze
@@ -79,13 +79,13 @@ export default async function ScadenzePage() {
               <li key={evento.id}>
                 <Link
                   href={`/animali/${evento.animale.id}`}
-                  className="flex items-center justify-between gap-4 p-4 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                  className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
                 >
                   <div>
                     <p className="font-medium text-zinc-900 dark:text-zinc-50">
-                      {evento.animale.nome} — {TIPO_EVENTO_LABEL[evento.tipo]}
+                      <span className="capitalize">{evento.animale.nome}</span> — {TIPO_EVENTO_LABEL[evento.tipo]}
                     </p>
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                    <p className="text-sm capitalize text-zinc-600 dark:text-zinc-400">
                       {evento.nomeSpecifico}
                     </p>
                   </div>
@@ -109,13 +109,13 @@ export default async function ScadenzePage() {
                 <li key={evento.id}>
                   <Link
                     href={`/animali/${evento.animale.id}`}
-                    className="flex items-center justify-between gap-4 p-4 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                    className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
                   >
                     <div>
                       <p className="font-medium text-zinc-900 dark:text-zinc-50">
-                        {evento.animale.nome} — {TIPO_EVENTO_LABEL[evento.tipo]}
+                        <span className="capitalize">{evento.animale.nome}</span> — {TIPO_EVENTO_LABEL[evento.tipo]}
                       </p>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                      <p className="text-sm capitalize text-zinc-600 dark:text-zinc-400">
                         {evento.nomeSpecifico}
                       </p>
                     </div>
