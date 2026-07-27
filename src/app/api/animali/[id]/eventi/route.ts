@@ -54,8 +54,15 @@ export async function POST(
     );
   }
 
+  // Calcolato esplicitamente, non lasciato al default true dello schema:
+  // un appuntamento non ricorrente non ancora avvenuto nasce non
+  // confermato, così viene subito segnalato come promemoria (vedi
+  // calcolaStatoEvento in src/lib/scadenza.ts). Le terapie giornaliere
+  // non usano mai questo campo, restano confermato=true per coerenza.
+  const confermato = !(parsed.data.ricorrenza === "NESSUNA" && new Date(parsed.data.data) > new Date());
+
   const evento = await prisma.eventoClinico.create({
-    data: { ...normalizzaEventoClinico(parsed.data), animaleId },
+    data: { ...normalizzaEventoClinico(parsed.data), animaleId, confermato },
   });
   return NextResponse.json(evento, { status: 201 });
 }

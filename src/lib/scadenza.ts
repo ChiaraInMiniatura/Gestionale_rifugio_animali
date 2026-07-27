@@ -54,19 +54,53 @@ export function calcolaStatoScadenza(
   return null;
 }
 
-/** Sottoinsieme di campi di EventoClinico richiesto da calcolaStatoEvento:
- *  vale solo per ricorrenza=NESSUNA (vaccino, antiparassitario, visita). */
+/** Sottoinsieme di campi di EventoClinico richiesto da calcolaStatoEvento e
+ *  dataRilevanteEvento: vale solo per ricorrenza=NESSUNA (vaccino,
+ *  antiparassitario, visita). */
 export interface EventoNonRicorrente {
   data: Date;
   dataScadenza: Date | null;
-  createdAt: Date;
+  confermato: boolean;
+}
+
+/** Data di un evento non ricorrente rilevante ai fini di una scadenza,
+ *  insieme al campo da cui proviene — serve a chi mostra l'evento per
+ *  colorare/etichettare la riga giusta (data vs dataScadenza), non
+ *  sempre la stessa. */
+export interface DataRilevante {
+  data: Date;
+  campo: "data" | "dataScadenza";
+}
+
+/**
+ * Determina quale data di un evento non ricorrente è rilevante ai fini di
+ * una scadenza, senza applicare alcuna soglia temporale (nessun concetto
+ * di "vicino" o "lontano" qui): usata sia da calcolaStatoEvento sotto sia
+ * dalla vista aggregata /animali/scadenze, che deve mostrare anche le
+ * date lontane nel tempo (sezione "Scadenze future").
+ * @param evento evento con dataScadenza e il flag confermato: un
+ *   appuntamento non confermato è esso stesso il promemoria (nessuno ha
+ *   ancora verificato che sia avvenuto), uno confermato usa invece
+ *   l'eventuale richiamo successivo.
+ * @returns { data, campo }: campo "data" se l'evento non è confermato
+ *   (l'appuntamento stesso, in attesa di conferma); campo "dataScadenza"
+ *   se confermato e con un richiamo impostato; null se confermato e senza
+ *   richiamo (nulla da segnalare).
+ */
+export function dataRilevanteEvento(evento: EventoNonRicorrente): DataRilevante | null {
+  if (!evento.confermato) {
+    return { data: evento.data, campo: "data" };
+  }
+  if (!evento.dataScadenza) {
+    return null;
+  }
+  return { data: evento.dataScadenza, campo: "dataScadenza" };
 }
 
 /** Esito di calcolaStatoEvento: oltre allo stato (colore), indica quale
- *  campo ha determinato quella data — serve a chi mostra l'evento per
- *  colorare la riga giusta (data vs dataScadenza), non sempre la stessa.
- *  campo è null solo quando stato è null per assenza di una data
- *  candidata (log retrospettivo senza dataScadenza impostata). */
+ *  campo ha determinato quella data (vedi dataRilevanteEvento). campo è
+ *  null solo quando stato è null per assenza di una data candidata
+ *  (evento confermato senza dataScadenza impostata). */
 export interface StatoEvento {
   stato: StatoScadenza;
   campo: "data" | "dataScadenza" | null;
@@ -74,60 +108,25 @@ export interface StatoEvento {
 
 /**
  * Determina lo stato di scadenza di un evento non ricorrente, tenendo
- * conto anche di appuntamenti futuri non ancora avvenuti (non solo del
- * classico "richiamo" in dataScadenza). Senza questo controllo, un
- * evento con data nel futuro (es. una visita prenotata) non genera mai
- * un promemoria finché non passa la sua data, e a quel punto sparisce
- * silenziosamente invece di segnalare che andrebbe confermato/aggiornato.
- * @param evento evento con data, dataScadenza e createdAt (createdAt
- *   distingue un evento "registrato in anticipo" da un log retrospettivo
- *   di qualcosa già avvenuto).
+ * conto anche di appuntamenti futuri non ancora confermati come avvenuti
+ * (non solo del classico "richiamo" in dataScadenza): sceglie la data
+ * rilevante con dataRilevanteEvento, poi applica la soglia dei 14 giorni
+ * di calcolaStatoScadenza sopra, senza duplicare la logica di scelta.
+ * @param evento evento con data, dataScadenza e confermato.
  * @param oggi data di riferimento; di default `new Date()`.
- * @returns { stato, campo } dove campo indica quale data ha determinato
- *   stato:
- *   - se evento.data è successiva a createdAt (confronto sull'istante
- *     completo, non solo sul giorno: un appuntamento registrato oggi per
- *     più tardi oggi stesso è comunque "programmato in anticipo", non un
- *     log retrospettivo solo perché cade nello stesso giorno di calendario)
- *     — evento "programmato in anticipo": campo "data", stato calcolato
- *     su evento.data;
- *   - altrimenti (log retrospettivo): campo "dataScadenza" (o null se
- *     assente), stato calcolato su dataScadenza — comportamento
- *     invariato rispetto a prima;
- *   - se entrambe le condizioni producono una data candidata (caso raro:
- *     appuntamento futuro con anche un richiamo già impostato), si usa
- *     quella con differenza assoluta in giorni più piccola rispetto a oggi,
- *     e campo riflette quale delle due è stata scelta.
+ * @returns { stato, campo }, vedi dataRilevanteEvento per il significato
+ *   di campo; stato è null se non c'è una data candidata oppure se quella
+ *   scelta è troppo lontana nel tempo (oltre 14 giorni).
  */
 export function calcolaStatoEvento(
   evento: EventoNonRicorrente,
   oggi: Date = new Date()
 ): StatoEvento {
-  // Confronto sull'istante completo (getTime()), non sul giorno di
-  // calendario come giornoUTC: la soglia dei 14 giorni resta a livello di
-  // giorno (calcolaStatoScadenza), ma qui serve distinguere "prima" da
-  // "dopo" anche entro lo stesso giorno, altrimenti un appuntamento
-  // registrato oggi per più tardi oggi stesso finirebbe nel ramo
-  // retrospettivo e non verrebbe mai segnalato come "in scadenza".
-  const programmataInAnticipo = evento.data.getTime() > evento.createdAt.getTime();
-
-  if (!programmataInAnticipo) {
-    return {
-      stato: calcolaStatoScadenza(evento.dataScadenza, oggi),
-      campo: evento.dataScadenza ? "dataScadenza" : null,
-    };
+  const rilevante = dataRilevanteEvento(evento);
+  if (!rilevante) {
+    return { stato: null, campo: null };
   }
-  if (!evento.dataScadenza) {
-    return { stato: calcolaStatoScadenza(evento.data, oggi), campo: "data" };
-  }
-
-  const oggiUTC = giornoUTC(oggi);
-  const diffData = Math.abs(giornoUTC(evento.data) - oggiUTC);
-  const diffScadenza = Math.abs(giornoUTC(evento.dataScadenza) - oggiUTC);
-  const campo: "data" | "dataScadenza" = diffData <= diffScadenza ? "data" : "dataScadenza";
-  const dataRilevante = campo === "data" ? evento.data : evento.dataScadenza;
-
-  return { stato: calcolaStatoScadenza(dataRilevante, oggi), campo };
+  return { stato: calcolaStatoScadenza(rilevante.data, oggi), campo: rilevante.campo };
 }
 
 /**

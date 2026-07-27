@@ -9,13 +9,22 @@ import { getSessioneApprovata } from "@/lib/api-auth";
 import { eventoClinicoSchema, normalizzaEventoClinico } from "@/lib/validations/evento-clinico";
 
 /**
- * Aggiorna un evento clinico esistente (sostituzione completa dei campi,
- * stesso schema usato in creazione).
- * @param request corpo JSON validato con eventoClinicoSchema.
+ * Aggiorna un evento clinico esistente. Due modalità mutuamente esclusive
+ * nello stesso body, distinte dalla presenza (esclusiva) del campo
+ * "confermato" — stesso principio già usato per stato/CAMPI_BASE in
+ * /api/animali/[id]/route.ts:
+ * - Body { confermato: boolean } e nient'altro: azione dedicata
+ *   conferma/annulla conferma, solo per ricorrenza NESSUNA.
+ * - Body senza "confermato": sostituzione completa degli altri campi,
+ *   validata con eventoClinicoSchema (comportamento invariato). Il campo
+ *   confermato non viene mai toccato da questo ramo, per non confermare
+ *   per sbaglio un evento mentre si corregge un refuso in una nota.
+ * @param request corpo JSON, in uno dei due formati sopra.
  * @param params contiene l'id dell'animale e dell'evento da modificare.
- * @returns 200 con l'evento aggiornato; 400 per id/body non validi o Zod
- *   fallito; 403 se la sessione non è valida o approvata; 404 se l'evento
- *   non esiste o non appartiene all'animale indicato nel path.
+ * @returns 200 con l'evento aggiornato; 400 per id/body non validi, Zod
+ *   fallito, "confermato" misto ad altri campi, o "confermato" su una
+ *   terapia giornaliera; 403 se la sessione non è valida o approvata;
+ *   404 se l'evento non esiste o non appartiene all'animale del path.
  */
 export async function PATCH(
   request: Request,
@@ -45,6 +54,43 @@ export async function PATCH(
     body = await request.json();
   } catch {
     return NextResponse.json({ message: "Body non valido" }, { status: 400 });
+  }
+
+  if (typeof body !== "object" || body === null) {
+    return NextResponse.json({ message: "Body non valido" }, { status: 400 });
+  }
+
+  const haCampoConfermato = Object.prototype.hasOwnProperty.call(body, "confermato");
+
+  if (haCampoConfermato) {
+    // "Esattamente e solo" confermato: qualunque altro campo nello stesso
+    // body rende la richiesta ambigua (le due modalità non si mescolano).
+    if (Object.keys(body).length > 1) {
+      return NextResponse.json(
+        { message: "Non è possibile modificare \"confermato\" insieme ad altri campi" },
+        { status: 400 }
+      );
+    }
+
+    const { confermato } = body as { confermato: unknown };
+    if (typeof confermato !== "boolean") {
+      return NextResponse.json({ message: "Dati non validi" }, { status: 400 });
+    }
+
+    // Il concetto di conferma esiste solo per gli eventi non ricorrenti:
+    // una terapia giornaliera non ha un "appuntamento" da confermare.
+    if (existing.ricorrenza !== "NESSUNA") {
+      return NextResponse.json(
+        { message: "Non applicabile alle terapie giornaliere" },
+        { status: 400 }
+      );
+    }
+
+    const evento = await prisma.eventoClinico.update({
+      where: { id: eventoId },
+      data: { confermato },
+    });
+    return NextResponse.json(evento);
   }
 
   const parsed = eventoClinicoSchema.safeParse(body);

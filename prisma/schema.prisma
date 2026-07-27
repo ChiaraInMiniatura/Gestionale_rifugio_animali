@@ -172,6 +172,14 @@ model EventoClinico {
   /// anticipo. null = terapia ancora in corso, nessun termine previsto.
   /// Deve restare null per gli eventi non ricorrenti.
   dataFine      DateTime?
+  /// Solo per ricorrenza=NESSUNA: false finché un appuntamento futuro non
+  /// viene confermato come avvenuto (bottone dedicato, non un popup: è
+  /// un'azione reversibile, non distruttiva). Sostituisce l'euristica
+  /// precedente basata su createdAt/data, poco chiara. Default true:
+  /// copre sia gli eventi già passati al momento della creazione (log
+  /// retrospettivi, nulla da confermare) sia i record già esistenti prima
+  /// di questa migrazione. Non utilizzato per ricorrenza=GIORNALIERA.
+  confermato    Boolean          @default(true)
   note          String?
   createdAt     DateTime         @default(now())
   /// Aggiornato automaticamente da Prisma ad ogni modifica del record.

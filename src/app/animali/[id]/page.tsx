@@ -18,6 +18,7 @@ import { TIPO_EVENTO_LABEL } from "@/lib/evento-clinico-label";
 import { StatoControl } from "@/components/animali/stato-control";
 import { EliminaAnimaleButton } from "@/components/animali/elimina-animale-button";
 import { EliminaEventoButton } from "@/components/animali/elimina-evento-button";
+import { ConfermaEventoButton } from "@/components/animali/conferma-evento-button";
 
 export default async function AnimaleDettaglioPage({
   params,
@@ -212,6 +213,17 @@ export default async function AnimaleDettaglioPage({
                         >
                           Modifica
                         </Link>
+                        {/* Il concetto di conferma esiste solo per gli
+                            eventi non ricorrenti (vedi ConfermaEventoButton
+                            e calcolaStatoEvento): una terapia giornaliera
+                            non ha un "appuntamento" da confermare. */}
+                        {evento.ricorrenza === "NESSUNA" && (
+                          <ConfermaEventoButton
+                            animaleId={animale.id}
+                            eventoId={evento.id}
+                            confermato={evento.confermato}
+                          />
+                        )}
                         <EliminaEventoButton
                           animaleId={animale.id}
                           eventoId={evento.id}

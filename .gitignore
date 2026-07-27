@@ -49,7 +49,5 @@ CLAUDE.md
 AGENTS.md
 .claude/
 
-diff.txt
-diff-claude.txt
-
-diff*.txt
+# qualunque file che inizi con "diff", indipendentemente dall'estensione
+diff*
