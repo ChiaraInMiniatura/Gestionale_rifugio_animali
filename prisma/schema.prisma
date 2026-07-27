@@ -111,4 +111,69 @@ model Animale {
   createdAt    DateTime     @default(now())
   /// Aggiornato automaticamente da Prisma ad ogni modifica del record.
   updatedAt    DateTime     @updatedAt
+  /// Cartella clinica dell'animale: uno-a-molti, si somma nel tempo e non
+  /// si sostituisce mai (ogni evento resta come storico).
+  eventiClinici EventoClinico[]
+}
+
+/// Categoria dell'evento clinico. Determina solo la classificazione in
+/// elenco/dashboard: la semantica di data/dataScadenza/dataFine dipende
+/// invece da "ricorrenza", non dal tipo (una TERAPIA può in teoria essere
+/// puntuale, anche se il caso d'uso tipico è GIORNALIERA).
+enum TipoEvento {
+  VACCINO
+  ANTIPARASSITARIO
+  VISITA
+  TERAPIA
+}
+
+/// Distingue eventi puntuali da terapie continuative: da questo dipende
+/// quale coppia di campi (dataScadenza vs dataFine) è valorizzabile su
+/// EventoClinico — vincolo di mutua esclusione applicato lato Zod
+/// (src/lib/validations/evento-clinico.ts), non esprimibile qui a livello
+/// di schema.
+enum RicorrenzaEvento {
+  /// Evento singolo (vaccino, antiparassitario, visita): usa dataScadenza
+  /// per l'eventuale richiamo, mai dataFine.
+  NESSUNA
+  /// Terapia continuativa (tipicamente TERAPIA): usa dataFine per
+  /// l'eventuale interruzione nota in anticipo, mai dataScadenza.
+  GIORNALIERA
+}
+
+/// Singola voce della cartella clinica di un animale. La coppia di campi
+/// realmente in uso dipende da "ricorrenza" (vedi enum sopra): il vincolo
+/// di mutua esclusione tra dataScadenza e dataFine è applicato solo lato
+/// Zod, non con un CHECK a livello di database.
+model EventoClinico {
+  id            Int              @id @default(autoincrement())
+  animaleId     Int
+  /// onDelete: Cascade — eliminando un animale si elimina anche tutta la
+  /// sua cartella clinica: scelta esplicita (non RESTRICT), confermata
+  /// perché un evento clinico non ha senso "orfano" senza l'animale a
+  /// cui si riferisce. Il popup di conferma su elimina-animale-button
+  /// avverte l'utente quando ci sono eventi collegati.
+  animale       Animale          @relation(fields: [animaleId], references: [id], onDelete: Cascade)
+  tipo          TipoEvento
+  /// Testo libero (es. "Trivalente", "Advantix", "Antibiotico X 2
+  /// volte/die"): i tipi sono poche categorie ampie, il nome specifico
+  /// del prodotto/prestazione varia troppo per meritare un enum.
+  nomeSpecifico String
+  /// Include sempre l'orario, non solo il giorno: utile in particolare
+  /// per le visite veterinarie, dove l'ora dell'appuntamento è
+  /// un'informazione pratica da ricordare. Per ricorrenza=GIORNALIERA
+  /// rappresenta il giorno di inizio terapia (l'orario è ignorato in UI).
+  data          DateTime
+  /// Solo per ricorrenza=NESSUNA: prossimo richiamo/visita. Deve restare
+  /// null per le terapie giornaliere (vedi RicorrenzaEvento).
+  dataScadenza  DateTime?
+  ricorrenza    RicorrenzaEvento @default(NESSUNA)
+  /// Solo per ricorrenza=GIORNALIERA: giorno di interruzione nota in
+  /// anticipo. null = terapia ancora in corso, nessun termine previsto.
+  /// Deve restare null per gli eventi non ricorrenti.
+  dataFine      DateTime?
+  note          String?
+  createdAt     DateTime         @default(now())
+  /// Aggiornato automaticamente da Prisma ad ogni modifica del record.
+  updatedAt     DateTime         @updatedAt
 }

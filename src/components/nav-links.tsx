@@ -23,6 +23,9 @@ export function NavLinks() {
       <Link href="/animali" className="hover:underline">
         Animali
       </Link>
+      <Link href="/animali/scadenze" className="hover:underline">
+        Scadenze
+      </Link>
       {session.user.role === "ADMIN" && (
         <Link href="/admin" className="hover:underline">
           Amministrazione

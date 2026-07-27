@@ -8,7 +8,20 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function EliminaAnimaleButton({ animaleId, nome }: { animaleId: number; nome: string }) {
+export function EliminaAnimaleButton({
+  animaleId,
+  nome,
+  haEventiClinici,
+}: {
+  animaleId: number;
+  nome: string;
+  // Calcolato dal server component chiamante (animale.eventiClinici.length
+  // > 0): evita una query aggiuntiva qui solo per saperlo. La FK
+  // EventoClinico → Animale è onDelete: Cascade, quindi eliminare
+  // l'animale elimina silenziosamente anche la sua cartella clinica: chi
+  // conferma deve saperlo prima di procedere, non scoprirlo dopo.
+  haEventiClinici: boolean;
+}) {
   const router = useRouter();
   const [eliminando, setEliminando] = useState(false);
   const [errore, setErrore] = useState<string | null>(null);
@@ -16,10 +29,12 @@ export function EliminaAnimaleButton({ animaleId, nome }: { animaleId: number; n
   async function handleElimina() {
     // Conferma esplicita: azione distruttiva e irreversibile, pensata
     // per utenti finali non tecnici (anche anziani) che non devono poter
-    // eliminare un animale con un click accidentale.
-    const confermato = window.confirm(
-      `Eliminare definitivamente ${nome}? L'operazione non è annullabile.`
-    );
+    // eliminare un animale con un click accidentale. Testo diverso se
+    // ci sono eventi clinici collegati, che andrebbero persi insieme.
+    const testoConferma = haEventiClinici
+      ? "Questo animale ha anche una cartella clinica: eliminandolo, tutti i dati clinici collegati (vaccini, terapie, visite) verranno eliminati definitivamente. Sei davvero sicura di voler procedere?"
+      : `Eliminare definitivamente ${nome}? L'operazione non è annullabile.`;
+    const confermato = window.confirm(testoConferma);
     if (!confermato) return;
 
     setErrore(null);

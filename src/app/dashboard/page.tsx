@@ -1,9 +1,13 @@
 // Pagina protetta (vedi matcher in src/proxy.ts): raggiungibile da
 // qualunque utente loggato e approvato, senza distinzione di ruolo.
-// Placeholder minimale: mostra solo un saluto e il ruolo dell'utente.
+// Oltre al saluto, mostra "Farmaci di oggi": le terapie giornaliere
+// attive nella giornata corrente, su tutti gli animali del rifugio.
 
+import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { terapiaAttivaOggi } from "@/lib/scadenza";
 
 export default async function DashboardPage() {
   // Il proxy ha già verificato sessione/approvazione a monte; qui si
@@ -11,8 +15,18 @@ export default async function DashboardPage() {
   // riautorizzare l'accesso.
   const session = await getServerSession(authOptions);
 
+  // Tutte le terapie giornaliere, poi filtrate in JS con terapiaAttivaOggi:
+  // il confronto a livello di giorno di calendario (non solo >=/<= diretto
+  // sulle Date) non è esprimibile comodamente nella where di Prisma.
+  const terapieGiornaliere = await prisma.eventoClinico.findMany({
+    where: { ricorrenza: "GIORNALIERA" },
+    include: { animale: { select: { id: true, nome: true } } },
+    orderBy: { animale: { nome: "asc" } },
+  });
+  const farmaciOggi = terapieGiornaliere.filter((evento) => terapiaAttivaOggi(evento));
+
   return (
-    <div className="flex flex-1 items-center justify-center bg-zinc-50 px-4 dark:bg-black">
+    <div className="flex flex-1 flex-col items-center gap-8 bg-zinc-50 px-4 py-10 dark:bg-black">
       <div className="text-center">
         <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
           Benvenuta, {session?.user.name}
@@ -20,6 +34,36 @@ export default async function DashboardPage() {
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
           Ruolo: {session?.user.role}
         </p>
+      </div>
+
+      <div className="w-full max-w-lg">
+        <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+          Farmaci di oggi
+        </h2>
+
+        {farmaciOggi.length === 0 ? (
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            Nessuna terapia giornaliera attiva oggi.
+          </p>
+        ) : (
+          <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+            {farmaciOggi.map((evento) => (
+              <li key={evento.id}>
+                <Link
+                  href={`/animali/${evento.animale.id}`}
+                  className="flex items-center justify-between gap-4 p-4 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                >
+                  <span className="font-medium text-zinc-900 dark:text-zinc-50">
+                    {evento.animale.nome}
+                  </span>
+                  <span className="text-sm text-zinc-600 dark:text-zinc-400">
+                    {evento.nomeSpecifico}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

@@ -1,17 +1,23 @@
 // Dettaglio di un animale: unica pagina che mostra la foto (grande, in
-// fondo) e i controlli riservati agli ADMIN (cambio stato, eliminazione).
-// Fallback testuale esplicito per ogni campo opzionale, così l'assenza
-// di un dato è sempre comunicata, mai lasciata come spazio vuoto.
+// fondo), la cartella clinica (eventi + scadenze) e i controlli riservati
+// agli ADMIN (cambio stato, eliminazione). Fallback testuale esplicito per
+// ogni campo opzionale, così l'assenza di un dato è sempre comunicata,
+// mai lasciata come spazio vuoto.
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
+import { format } from "date-fns";
+import { it } from "date-fns/locale";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { calcolaEta } from "@/lib/eta";
+import { calcolaStatoEvento, coloreScadenza } from "@/lib/scadenza";
 import { STATO_LABEL } from "@/lib/stato-animale";
+import { TIPO_EVENTO_LABEL } from "@/lib/evento-clinico-label";
 import { StatoControl } from "@/components/animali/stato-control";
 import { EliminaAnimaleButton } from "@/components/animali/elimina-animale-button";
+import { EliminaEventoButton } from "@/components/animali/elimina-evento-button";
 
 export default async function AnimaleDettaglioPage({
   params,
@@ -24,11 +30,15 @@ export default async function AnimaleDettaglioPage({
     notFound();
   }
 
-  // Sessione e animale recuperati in parallelo: sono indipendenti, non
-  // c'è motivo di attendere l'uno prima di iniziare l'altro.
+  // Sessione e animale (con la sua cartella clinica, più recente prima)
+  // recuperati in parallelo: sono indipendenti, non c'è motivo di
+  // attendere l'uno prima di iniziare l'altro.
   const [session, animale] = await Promise.all([
     getServerSession(authOptions),
-    prisma.animale.findUnique({ where: { id: animaleId } }),
+    prisma.animale.findUnique({
+      where: { id: animaleId },
+      include: { eventiClinici: { orderBy: { data: "desc" } } },
+    }),
   ]);
 
   if (!animale) {
@@ -112,9 +122,119 @@ export default async function AnimaleDettaglioPage({
           )}
         </div>
 
+        <div className="mt-6 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+          <div className="mb-3 flex items-center justify-between">
+            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
+              Cartella clinica
+            </p>
+            <Link
+              href={`/animali/${animale.id}/eventi/nuovo`}
+              className="text-sm font-medium text-zinc-700 underline dark:text-zinc-300"
+            >
+              Aggiungi evento
+            </Link>
+          </div>
+
+          {animale.eventiClinici.length === 0 ? (
+            <p className="text-sm text-zinc-500 dark:text-zinc-500">
+              Nessun evento clinico registrato.
+            </p>
+          ) : (
+            <ul className="space-y-3">
+              {animale.eventiClinici.map((evento) => {
+                // La scadenza si applica solo agli eventi non ricorrenti
+                // (vedi RicorrenzaEvento in schema.prisma): per le terapie
+                // giornaliere dataScadenza resta sempre null. "campo" dice
+                // quale riga (data vs dataScadenza) va colorata: non è
+                // sempre la stessa, dipende da come calcolaStatoEvento ha
+                // determinato lo stato per questo evento specifico.
+                const { stato, campo } =
+                  evento.ricorrenza === "NESSUNA"
+                    ? calcolaStatoEvento(evento)
+                    : { stato: null, campo: null };
+
+                return (
+                  <li
+                    key={evento.id}
+                    className="rounded-md border border-zinc-200 p-3 text-sm dark:border-zinc-800"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-medium text-zinc-900 dark:text-zinc-50">
+                          {TIPO_EVENTO_LABEL[evento.tipo]} — {evento.nomeSpecifico}
+                        </p>
+
+                        {evento.ricorrenza === "GIORNALIERA" ? (
+                          // Terapia continuativa: periodo, non un singolo
+                          // istante. L'orario di "data" è ignorato in UI
+                          // (vedi commento su EventoClinico in schema.prisma).
+                          <p className="text-zinc-700 dark:text-zinc-300">
+                            {format(evento.data, "d MMMM yyyy", { locale: it })} →{" "}
+                            {evento.dataFine
+                              ? format(evento.dataFine, "d MMMM yyyy", { locale: it })
+                              : "in corso"}
+                          </p>
+                        ) : (
+                          <>
+                            <p
+                              className={
+                                campo === "data"
+                                  ? coloreScadenza(stato)
+                                  : "text-zinc-700 dark:text-zinc-300"
+                              }
+                            >
+                              {format(evento.data, "d MMMM yyyy, HH:mm", { locale: it })}
+                            </p>
+                            {evento.dataScadenza && (
+                              <p
+                                className={
+                                  campo === "dataScadenza"
+                                    ? coloreScadenza(stato)
+                                    : "text-zinc-700 dark:text-zinc-300"
+                                }
+                              >
+                                Prossimo richiamo:{" "}
+                                {format(evento.dataScadenza, "d MMMM yyyy, HH:mm", { locale: it })}
+                              </p>
+                            )}
+                          </>
+                        )}
+
+                        {evento.note && (
+                          <p className="mt-1 text-zinc-500 dark:text-zinc-500">{evento.note}</p>
+                        )}
+                      </div>
+
+                      <div className="flex shrink-0 flex-col items-end gap-1">
+                        <Link
+                          href={`/animali/${animale.id}/eventi/${evento.id}/modifica`}
+                          className="text-xs font-medium text-zinc-700 underline dark:text-zinc-300"
+                        >
+                          Modifica
+                        </Link>
+                        <EliminaEventoButton
+                          animaleId={animale.id}
+                          eventoId={evento.id}
+                          tipo={evento.tipo}
+                          nomeSpecifico={evento.nomeSpecifico}
+                          data={evento.data}
+                        />
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+
         {isAdmin && (
           <div className="mt-6 border-t border-zinc-200 pt-4 dark:border-zinc-800">
-            <EliminaAnimaleButton animaleId={animale.id} nome={animale.nome} />
+            <EliminaAnimaleButton
+              animaleId={animale.id}
+              nome={animale.nome}
+              haEventiClinici={animale.eventiClinici.length > 0}
+            />
           </div>
         )}
 
