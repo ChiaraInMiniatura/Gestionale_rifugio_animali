@@ -1,8 +1,10 @@
 // Bottone per confermare/annullare la conferma di un evento clinico non
-// ricorrente (vaccino, antiparassitario, visita): un appuntamento futuro
-// nasce non confermato, e resta segnalato (arancione/rosso, vedi
-// calcolaStatoEvento) finché qualcuno non conferma che è avvenuto. A
-// differenza di EliminaEventoButton, l'azione è reversibile e non
+// giornaliero (evento singolo, o richiamo mensile/annuale): un
+// appuntamento futuro nasce non confermato, e resta segnalato
+// (arancione/rosso, vedi calcolaStatoEvento) finché qualcuno non conferma
+// che è avvenuto. Per i richiami mensili/annuali, confermare genera anche
+// il prossimo evento della serie (vedi src/lib/genera-prossimo-evento.ts).
+// A differenza di EliminaEventoButton, l'azione è reversibile e non
 // distruttiva: nessun popup di conferma, PATCH diretto.
 
 "use client";

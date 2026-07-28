@@ -39,11 +39,14 @@ export const eventoClinicoSchema = z
   // stato/CAMPI_BASE in /api/animali/[id]/route.ts): dataScadenza e
   // dataFine appartengono a semantiche diverse (richiamo singolo vs
   // interruzione terapia) e non possono convivere sullo stesso evento.
-  .refine((v) => v.ricorrenza !== "GIORNALIERA" || !v.dataScadenza, {
-    message: "La scadenza non si applica alle terapie giornaliere",
+  // dataScadenza si applica solo a NESSUNA: MENSILE/ANNUALE non la usano
+  // perché il richiamo successivo viene generato da solo, non inserito a
+  // mano (vedi prossimoGenerato in schema.prisma).
+  .refine((v) => v.ricorrenza === "NESSUNA" || !v.dataScadenza, {
+    message: "La scadenza si applica solo agli eventi singoli",
     path: ["dataScadenza"],
   })
-  .refine((v) => v.ricorrenza !== "NESSUNA" || !v.dataFine, {
+  .refine((v) => v.ricorrenza === "GIORNALIERA" || !v.dataFine, {
     message: "La data di fine si applica solo alle terapie giornaliere",
     path: ["dataFine"],
   });

@@ -7,6 +7,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessioneApprovata } from "@/lib/api-auth";
 import { eventoClinicoSchema, normalizzaEventoClinico } from "@/lib/validations/evento-clinico";
+import { generaProssimoEventoSeServe } from "@/lib/genera-prossimo-evento";
 
 /**
  * Aggiorna un evento clinico esistente. Due modalità mutuamente esclusive
@@ -14,7 +15,10 @@ import { eventoClinicoSchema, normalizzaEventoClinico } from "@/lib/validations/
  * "confermato" — stesso principio già usato per stato/CAMPI_BASE in
  * /api/animali/[id]/route.ts:
  * - Body { confermato: boolean } e nient'altro: azione dedicata
- *   conferma/annulla conferma, solo per ricorrenza NESSUNA.
+ *   conferma/annulla conferma, per ricorrenza NESSUNA/MENSILE/ANNUALE
+ *   (mai GIORNALIERA). Sulla transizione false → true di un evento
+ *   Mensile/Annuale, genera anche il richiamo successivo della stessa
+ *   serie (vedi src/lib/genera-prossimo-evento.ts).
  * - Body senza "confermato": sostituzione completa degli altri campi,
  *   validata con eventoClinicoSchema (comportamento invariato). Il campo
  *   confermato non viene mai toccato da questo ramo, per non confermare
@@ -79,9 +83,10 @@ export async function PATCH(
       return NextResponse.json({ message: "Dati non validi" }, { status: 400 });
     }
 
-    // Il concetto di conferma esiste solo per gli eventi non ricorrenti:
-    // una terapia giornaliera non ha un "appuntamento" da confermare.
-    if (existing.ricorrenza !== "NESSUNA") {
+    // Il concetto di conferma esiste per NESSUNA/MENSILE/ANNUALE, mai
+    // per GIORNALIERA: una terapia continuativa non ha un "appuntamento"
+    // singolo da confermare.
+    if (existing.ricorrenza === "GIORNALIERA") {
       return NextResponse.json(
         { message: "Non applicabile alle terapie giornaliere" },
         { status: 400 }
@@ -92,6 +97,13 @@ export async function PATCH(
       where: { id: eventoId },
       data: { confermato },
     });
+
+    // Solo sulla transizione false → true (non ad ogni conferma ripetuta,
+    // vedi la guardia "prossimoGenerato" dentro l'helper): genera il
+    // richiamo successivo per le serie Mensile/Annuale.
+    if (!existing.confermato && confermato) {
+      await generaProssimoEventoSeServe(evento);
+    }
     return NextResponse.json(evento);
   }
 

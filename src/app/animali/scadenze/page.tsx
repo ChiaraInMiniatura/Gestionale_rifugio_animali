@@ -1,7 +1,7 @@
 // Vista aggregata delle scadenze su tutto il rifugio (/animali/scadenze):
-// due sezioni per gli eventi non ricorrenti (vaccini, antiparassitari,
-// visite — mai terapie giornaliere, che non hanno questo concetto), in
-// base alla data rilevante scelta da dataRilevanteEvento (src/lib/scadenza.ts):
+// due sezioni per gli eventi con un concetto di scadenza (singoli,
+// richiami mensili/annuali — mai terapie giornaliere, che non ce l'hanno),
+// in base alla data rilevante scelta da dataRilevanteEvento (src/lib/scadenza.ts):
 // "Scadenze imminenti" (scadute o entro 14 giorni) e "Scadenze future"
 // (oltre i 14 giorni), ciascun evento in una sola delle due, mai in entrambe.
 
@@ -25,12 +25,13 @@ function nonNulla<T>(v: T | null): v is T {
 }
 
 export default async function ScadenzePage() {
-  // Query invariata rispetto a prima: tutti gli eventi non ricorrenti (il
-  // campo confermato fa già parte del record completo restituito da
-  // Prisma). Il filtro vero e proprio (imminente/futura) è più sotto, dopo
-  // aver scelto la data rilevante per ciascun evento.
+  // Tutti gli eventi tranne le terapie giornaliere (le uniche senza un
+  // concetto di scadenza): il campo confermato fa già parte del record
+  // completo restituito da Prisma. Il filtro vero e proprio
+  // (imminente/futura) è più sotto, dopo aver scelto la data rilevante
+  // per ciascun evento.
   const eventi = await prisma.eventoClinico.findMany({
-    where: { ricorrenza: "NESSUNA" },
+    where: { ricorrenza: { not: "GIORNALIERA" } },
     include: { animale: { select: { id: true, nome: true } } },
   });
 

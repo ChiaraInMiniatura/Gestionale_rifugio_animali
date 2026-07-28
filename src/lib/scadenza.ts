@@ -55,8 +55,10 @@ export function calcolaStatoScadenza(
 }
 
 /** Sottoinsieme di campi di EventoClinico richiesto da calcolaStatoEvento e
- *  dataRilevanteEvento: vale solo per ricorrenza=NESSUNA (vaccino,
- *  antiparassitario, visita). */
+ *  dataRilevanteEvento: vale per ricorrenza NESSUNA/MENSILE/ANNUALE (mai
+ *  GIORNALIERA, che non ha un concetto di scadenza — usa dataFine, non
+ *  dataScadenza). Il nome è storico (risale a quando esisteva solo
+ *  NESSUNA), ma la logica è la stessa per tutte e tre. */
 export interface EventoNonRicorrente {
   data: Date;
   dataScadenza: Date | null;

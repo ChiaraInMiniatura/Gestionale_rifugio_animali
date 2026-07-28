@@ -1,7 +1,10 @@
 // Form condiviso da creazione e modifica di un evento clinico: la sola
 // presenza di eventoIniziale decide la modalità (POST vs PATCH,
 // precompilazione dei campi), stesso principio già usato in AnimaleForm.
-// Il toggle ricorrenza mostra dataScadenza oppure dataFine, mai entrambi:
+// Il toggle ricorrenza mostra dataScadenza (solo NESSUNA), dataFine (solo
+// GIORNALIERA), o un testo informativo senza campi (MENSILE/ANNUALE, il
+// richiamo successivo si genera da solo — vedi
+// src/lib/genera-prossimo-evento.ts): mai più di un campo insieme,
 // riflette in UI il vincolo di mutua esclusione applicato lato Zod
 // (src/lib/validations/evento-clinico.ts). L'invio è sempre preceduto da
 // un popup di conferma esplicito, testo diverso per creazione e modifica.
@@ -129,8 +132,9 @@ export function EventoClinicoForm({
       : { tipo: "VACCINO", ricorrenza: "NESSUNA" },
   });
 
-  // Determina quale dei due campi (dataScadenza / dataFine) mostrare:
-  // mai entrambi insieme in UI, riflette il vincolo lato Zod.
+  // Determina cosa mostrare sotto la data (dataScadenza, dataFine, o il
+  // testo informativo per Mensile/Annuale): mai più di un campo insieme
+  // in UI, riflette il vincolo lato Zod.
   const ricorrenza = watch("ricorrenza");
   const { onChange: onRicorrenzaChangeRHF, ...restRicorrenza } = register("ricorrenza");
 
@@ -226,13 +230,15 @@ export function EventoClinicoForm({
           {...restRicorrenza}
           onChange={(e) => {
             onRicorrenzaChangeRHF(e);
-            // Svuota il campo non pertinente alla scelta corrente: evita
-            // che un valore residuo dell'altra modalità venga inviato
+            // Svuota i campi non pertinenti alla scelta corrente: evita
+            // che un valore residuo di un'altra modalità venga inviato
             // insieme (rifiutato lato Zod con il vincolo di mutua
             // esclusione, ma è più chiaro pulirlo subito anche in UI).
-            if (e.target.value === "GIORNALIERA") {
+            // Solo NESSUNA usa dataScadenza; solo GIORNALIERA usa dataFine.
+            if (e.target.value !== "NESSUNA") {
               setValue("dataScadenza", undefined);
-            } else {
+            }
+            if (e.target.value !== "GIORNALIERA") {
               setValue("dataFine", undefined);
             }
           }}
@@ -276,6 +282,14 @@ export function EventoClinicoForm({
             <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.dataFine.message}</p>
           )}
         </div>
+      ) : ricorrenza === "MENSILE" || ricorrenza === "ANNUALE" ? (
+        // Nessun campo da compilare: il richiamo successivo lo genera da
+        // solo il sistema, alla conferma di questo (vedi
+        // src/lib/genera-prossimo-evento.ts) — non ha senso chiedere qui
+        // una data che l'app calcola automaticamente.
+        <p className="mb-6 text-sm text-zinc-700 dark:text-zinc-300">
+          Il prossimo richiamo verrà generato automaticamente alla conferma.
+        </p>
       ) : (
         <div className="mb-6">
           <label htmlFor="dataScadenza" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">

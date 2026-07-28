@@ -166,14 +166,14 @@ export default async function AnimaleDettaglioPage({
           ) : (
             <ul className="space-y-3">
               {animale.eventiClinici.map((evento) => {
-                // La scadenza si applica solo agli eventi non ricorrenti
-                // (vedi RicorrenzaEvento in schema.prisma): per le terapie
-                // giornaliere dataScadenza resta sempre null. "campo" dice
-                // quale riga (data vs dataScadenza) va colorata: non è
-                // sempre la stessa, dipende da come calcolaStatoEvento ha
-                // determinato lo stato per questo evento specifico.
+                // La scadenza si applica a NESSUNA/MENSILE/ANNUALE (tutto
+                // tranne le terapie giornaliere, dove dataScadenza resta
+                // sempre null). "campo" dice quale riga (data vs
+                // dataScadenza) va colorata: non è sempre la stessa,
+                // dipende da come calcolaStatoEvento ha determinato lo
+                // stato per questo evento specifico.
                 const { stato, campo } =
-                  evento.ricorrenza === "NESSUNA"
+                  evento.ricorrenza !== "GIORNALIERA"
                     ? calcolaStatoEvento(evento)
                     : { stato: null, campo: null };
 
@@ -283,11 +283,12 @@ export default async function AnimaleDettaglioPage({
                         >
                           Modifica
                         </Link>
-                        {/* Il concetto di conferma esiste solo per gli
-                            eventi non ricorrenti (vedi ConfermaEventoButton
-                            e calcolaStatoEvento): una terapia giornaliera
-                            non ha un "appuntamento" da confermare. */}
-                        {evento.ricorrenza === "NESSUNA" && (
+                        {/* Il concetto di conferma esiste per NESSUNA/
+                            MENSILE/ANNUALE (vedi ConfermaEventoButton e
+                            calcolaStatoEvento), mai per GIORNALIERA: una
+                            terapia continuativa non ha un "appuntamento"
+                            da confermare. */}
+                        {evento.ricorrenza !== "GIORNALIERA" && (
                           <ConfermaEventoButton
                             animaleId={animale.id}
                             eventoId={evento.id}

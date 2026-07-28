@@ -149,6 +149,12 @@ enum RicorrenzaEvento {
   /// Terapia continuativa (tipicamente TERAPIA): usa dataFine per
   /// l'eventuale interruzione nota in anticipo, mai dataScadenza.
   GIORNALIERA
+  /// Si ripete ogni mese: né dataScadenza né dataFine, alla conferma
+  /// l'app genera da sola il prossimo evento della stessa serie (data +
+  /// 1 mese) — vedi campo "prossimoGenerato" su EventoClinico sotto.
+  MENSILE
+  /// Come MENSILE, ma ogni anno (data + 1 anno) — tipico per i vaccini.
+  ANNUALE
 }
 
 /// Singola voce della cartella clinica di un animale. La coppia di campi
@@ -182,14 +188,23 @@ model EventoClinico {
   /// anticipo. null = terapia ancora in corso, nessun termine previsto.
   /// Deve restare null per gli eventi non ricorrenti.
   dataFine      DateTime?
-  /// Solo per ricorrenza=NESSUNA: false finché un appuntamento futuro non
-  /// viene confermato come avvenuto (bottone dedicato, non un popup: è
-  /// un'azione reversibile, non distruttiva). Sostituisce l'euristica
-  /// precedente basata su createdAt/data, poco chiara. Default true:
-  /// copre sia gli eventi già passati al momento della creazione (log
-  /// retrospettivi, nulla da confermare) sia i record già esistenti prima
-  /// di questa migrazione. Non utilizzato per ricorrenza=GIORNALIERA.
+  /// Per ricorrenza NESSUNA/MENSILE/ANNUALE: false finché un appuntamento
+  /// futuro non viene confermato come avvenuto (bottone dedicato, non un
+  /// popup: è un'azione reversibile, non distruttiva). Sostituisce
+  /// l'euristica precedente basata su createdAt/data, poco chiara.
+  /// Default true: copre sia gli eventi già passati al momento della
+  /// creazione (log retrospettivi, nulla da confermare) sia i record già
+  /// esistenti prima di questa migrazione. Non utilizzato per
+  /// ricorrenza=GIORNALIERA. Per MENSILE/ANNUALE, la transizione a
+  /// true è anche il momento in cui si genera il prossimo evento della
+  /// serie (vedi prossimoGenerato sotto).
   confermato    Boolean          @default(true)
+  /// Solo per ricorrenza MENSILE/ANNUALE: true dopo che è già stato
+  /// generato l'evento successivo della stessa serie. Guardia contro i
+  /// duplicati: se l'evento viene confermato, poi annullato, poi
+  /// riconfermato più volte, il rinnovo automatico scatta una sola
+  /// volta, non ad ogni conferma. Ignorato per le altre ricorrenze.
+  prossimoGenerato Boolean       @default(false)
   note          String?
   createdAt     DateTime         @default(now())
   /// Aggiornato automaticamente da Prisma ad ogni modifica del record.

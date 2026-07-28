@@ -15,4 +15,6 @@ export const TIPO_EVENTO_LABEL: Record<TipoEvento, string> = {
 export const RICORRENZA_LABEL: Record<RicorrenzaEvento, string> = {
   NESSUNA: "Evento singolo (con eventuale richiamo)",
   GIORNALIERA: "Terapia giornaliera continuativa",
+  MENSILE: "Richiamo mensile (rinnovo automatico)",
+  ANNUALE: "Richiamo annuale (rinnovo automatico)",
 };

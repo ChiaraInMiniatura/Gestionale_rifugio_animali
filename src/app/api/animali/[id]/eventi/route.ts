@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessioneApprovata } from "@/lib/api-auth";
 import { eventoClinicoSchema, normalizzaEventoClinico } from "@/lib/validations/evento-clinico";
+import { generaProssimoEventoSeServe } from "@/lib/genera-prossimo-evento";
 
 /**
  * Crea un nuovo evento clinico per l'animale indicato nel path. Nessun
@@ -55,14 +56,21 @@ export async function POST(
   }
 
   // Calcolato esplicitamente, non lasciato al default true dello schema:
-  // un appuntamento non ricorrente non ancora avvenuto nasce non
-  // confermato, così viene subito segnalato come promemoria (vedi
-  // calcolaStatoEvento in src/lib/scadenza.ts). Le terapie giornaliere
-  // non usano mai questo campo, restano confermato=true per coerenza.
-  const confermato = !(parsed.data.ricorrenza === "NESSUNA" && new Date(parsed.data.data) > new Date());
+  // un appuntamento futuro non ancora avvenuto nasce non confermato, così
+  // viene subito segnalato come promemoria (vedi calcolaStatoEvento in
+  // src/lib/scadenza.ts). Vale per NESSUNA/MENSILE/ANNUALE: le terapie
+  // giornaliere non usano mai questo campo, restano confermato=true per
+  // coerenza.
+  const ricorrenzaConConferma = parsed.data.ricorrenza !== "GIORNALIERA";
+  const confermato = !(ricorrenzaConConferma && new Date(parsed.data.data) > new Date());
 
   const evento = await prisma.eventoClinico.create({
     data: { ...normalizzaEventoClinico(parsed.data), animaleId, confermato },
   });
+
+  // Log retrospettivo (data già passata) di un evento Mensile/Annuale:
+  // nasce già confermato, quindi genera subito il richiamo successivo.
+  await generaProssimoEventoSeServe(evento);
+
   return NextResponse.json(evento, { status: 201 });
 }
