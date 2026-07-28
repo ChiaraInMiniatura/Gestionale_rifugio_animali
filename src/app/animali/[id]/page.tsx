@@ -40,7 +40,10 @@ export default async function AnimaleDettaglioPage({
     prisma.animale.findUnique({
       where: { id: animaleId },
       include: {
-        eventiClinici: { orderBy: { data: "desc" } },
+        eventiClinici: {
+          orderBy: { data: "desc" },
+          include: { storico: { orderBy: { modificatoIl: "desc" } } },
+        },
         adozioni: { orderBy: { dataInizio: "desc" } },
       },
     }),
@@ -223,6 +226,53 @@ export default async function AnimaleDettaglioPage({
 
                         {evento.note && (
                           <p className="mt-1 text-zinc-700 dark:text-zinc-300">{evento.note}</p>
+                        )}
+
+                        {/* Nessun link se l'evento non è mai stato modificato
+                            (il caso più comune): niente rumore visivo per chi
+                            non ne ha bisogno. Sola consultazione, nessun
+                            controllo interattivo su queste righe. */}
+                        {evento.storico.length > 0 && (
+                          <details className="mt-2">
+                            <summary className="cursor-pointer text-zinc-700 underline dark:text-zinc-300">
+                              Storico modifiche ({evento.storico.length})
+                            </summary>
+                            <ul className="mt-2 space-y-2">
+                              {evento.storico.map((versione) => (
+                                <li
+                                  key={versione.id}
+                                  className="rounded-md border border-zinc-200 p-2 dark:border-zinc-800"
+                                >
+                                  <p className="text-zinc-900 dark:text-zinc-50">
+                                    {TIPO_EVENTO_LABEL[versione.tipo]} —{" "}
+                                    <span className="capitalize">{versione.nomeSpecifico}</span>
+                                  </p>
+                                  <p className="text-zinc-700 dark:text-zinc-300">
+                                    {versione.ricorrenza === "GIORNALIERA"
+                                      ? `${format(versione.data, "d MMMM yyyy", { locale: it })} → ${
+                                          versione.dataFine
+                                            ? format(versione.dataFine, "d MMMM yyyy", { locale: it })
+                                            : "in corso"
+                                        }`
+                                      : format(versione.data, "d MMMM yyyy, HH:mm", { locale: it })}
+                                  </p>
+                                  {versione.dataScadenza && (
+                                    <p className="text-zinc-700 dark:text-zinc-300">
+                                      Prossimo richiamo:{" "}
+                                      {format(versione.dataScadenza, "d MMMM yyyy, HH:mm", { locale: it })}
+                                    </p>
+                                  )}
+                                  {versione.note && (
+                                    <p className="text-zinc-700 dark:text-zinc-300">{versione.note}</p>
+                                  )}
+                                  <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+                                    Modificato il{" "}
+                                    {format(versione.modificatoIl, "d MMMM yyyy, HH:mm", { locale: it })}
+                                  </p>
+                                </li>
+                              ))}
+                            </ul>
+                          </details>
                         )}
                       </div>
 

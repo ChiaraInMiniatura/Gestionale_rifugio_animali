@@ -18,7 +18,9 @@ import { eventoClinicoSchema, normalizzaEventoClinico } from "@/lib/validations/
  * - Body senza "confermato": sostituzione completa degli altri campi,
  *   validata con eventoClinicoSchema (comportamento invariato). Il campo
  *   confermato non viene mai toccato da questo ramo, per non confermare
- *   per sbaglio un evento mentre si corregge un refuso in una nota.
+ *   per sbaglio un evento mentre si corregge un refuso in una nota. Prima
+ *   di sovrascrivere, salva un'istantanea dei valori precedenti in
+ *   EventoClinicoStorico (il ramo "confermato" sopra non lo fa mai).
  * @param request corpo JSON, in uno dei due formati sopra.
  * @param params contiene l'id dell'animale e dell'evento da modificare.
  * @returns 200 con l'evento aggiornato; 400 per id/body non validi, Zod
@@ -100,6 +102,24 @@ export async function PATCH(
       { status: 400 }
     );
   }
+
+  // Istantanea dei valori PRIMA di applicare la modifica (già letti sopra
+  // per la verifica di appartenenza, nessuna query aggiuntiva): solo
+  // questo ramo genera storico, mai il PATCH dedicato "confermato" sopra
+  // (troppo frequente, non è una modifica del contenuto clinico).
+  await prisma.eventoClinicoStorico.create({
+    data: {
+      eventoId: existing.id,
+      tipo: existing.tipo,
+      nomeSpecifico: existing.nomeSpecifico,
+      data: existing.data,
+      dataScadenza: existing.dataScadenza,
+      ricorrenza: existing.ricorrenza,
+      dataFine: existing.dataFine,
+      confermato: existing.confermato,
+      note: existing.note,
+    },
+  });
 
   const evento = await prisma.eventoClinico.update({
     where: { id: eventoId },

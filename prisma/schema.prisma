@@ -194,6 +194,34 @@ model EventoClinico {
   createdAt     DateTime         @default(now())
   /// Aggiornato automaticamente da Prisma ad ogni modifica del record.
   updatedAt     DateTime         @updatedAt
+  /// Istantanee dei valori precedenti ad ogni modifica "vera" (non il
+  /// tocco di conferma/annulla conferma): si accumulano nel tempo come
+  /// EventoClinico stesso rispetto ad Animale.
+  storico       EventoClinicoStorico[]
+}
+
+/// Istantanea dei valori di un evento clinico subito PRIMA di una
+/// modifica "vera" (tramite EventoClinicoForm) — non generata dal
+/// semplice PATCH di conferma/annulla conferma, troppo frequente e non
+/// rilevante come "modifica" del contenuto clinico. onDelete: Cascade da
+/// EventoClinico, stesso principio già usato altrove: eliminare l'evento
+/// elimina anche il suo storico. Nessun campo su "chi" ha modificato,
+/// solo cosa e quando (scelta deliberata).
+model EventoClinicoStorico {
+  id            Int              @id @default(autoincrement())
+  eventoId      Int
+  evento        EventoClinico    @relation(fields: [eventoId], references: [id], onDelete: Cascade)
+  tipo          TipoEvento
+  nomeSpecifico String
+  data          DateTime
+  dataScadenza  DateTime?
+  ricorrenza    RicorrenzaEvento
+  dataFine      DateTime?
+  confermato    Boolean
+  note          String?
+  /// Quando è stata fatta la modifica che ha reso obsoleta questa
+  /// istantanea (non quando l'evento originale fu creato).
+  modificatoIl  DateTime         @default(now())
 }
 
 /// Distingue un affido temporaneo da un'adozione definitiva sullo stesso
