@@ -48,6 +48,12 @@ model User {
   /// valore viene sempre riletto dal DB ad ogni richiesta (mai fidato
   /// dal solo JWT di sessione), così una revoca è immediata.
   approved  Boolean  @default(false)
+  /// Ad uso esclusivo dell'ADMIN, mai visibile alla volontaria stessa:
+  /// numero di telefono e osservazioni pratiche di gestione (es.
+  /// disponibilità, difficoltà). Testo libero, nessuna validazione di
+  /// formato — stessa scelta già fatta per "documento" sull'adottante.
+  cellulare String?
+  note      String?
   createdAt DateTime @default(now())
 }
 

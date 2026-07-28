@@ -38,7 +38,7 @@ export function EliminaEventoButton({
     // e deve capire a colpo d'occhio quale sta per eliminare.
     const dataFormattata = format(data, "d MMMM yyyy, HH:mm", { locale: it });
     const confermato = window.confirm(
-      `Sei sicura di voler eliminare ${TIPO_EVENTO_LABEL[tipo]}: ${nomeSpecifico} del ${dataFormattata}? L'azione è irreversibile.`
+      `Sei sicura/o di voler eliminare ${TIPO_EVENTO_LABEL[tipo]}: ${nomeSpecifico} del ${dataFormattata}? L'azione è irreversibile.`
     );
     if (!confermato) return;
 

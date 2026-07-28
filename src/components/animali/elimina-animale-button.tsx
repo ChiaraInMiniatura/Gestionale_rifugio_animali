@@ -32,7 +32,7 @@ export function EliminaAnimaleButton({
     // eliminare un animale con un click accidentale. Testo diverso se
     // ci sono eventi clinici collegati, che andrebbero persi insieme.
     const testoConferma = haEventiClinici
-      ? "Questo animale ha anche una cartella clinica: eliminandolo, tutti i dati clinici collegati (vaccini, terapie, visite) verranno eliminati definitivamente. Sei davvero sicura di voler procedere?"
+      ? "Questo animale ha anche una cartella clinica: eliminandolo, tutti i dati clinici collegati (vaccini, terapie, visite) verranno eliminati definitivamente. Sei davvero sicura/o di voler procedere?"
       : `Eliminare definitivamente ${nome}? L'operazione non è annullabile.`;
     const confermato = window.confirm(testoConferma);
     if (!confermato) return;

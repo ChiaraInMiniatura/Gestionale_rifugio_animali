@@ -1,12 +1,14 @@
-// Pannello ADMIN-only: elenco delle richieste di registrazione in attesa
-// di approvazione. Il controllo ruolo qui è un secondo livello di difesa
-// (oltre al proxy, che già blocca i non-ADMIN su /admin): una pagina
-// server component non deve fidarsi solo del middleware a monte.
+// Pannello ADMIN-only: gestione completa degli utenti (VOLONTARIA e
+// ADMIN), divisi in "in attesa di approvazione" e "confermati", con
+// possibilità di eliminare, cambiare ruolo e password anche per queste
+// ultime. Il controllo ruolo qui è un secondo livello di difesa (oltre al
+// proxy, che già blocca i non-ADMIN su /admin): una pagina server
+// component non deve fidarsi solo del middleware a monte.
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PendingUsers } from "@/components/admin/pending-users";
+import { UtentiList } from "@/components/admin/utenti-list";
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions);
@@ -19,25 +21,43 @@ export default async function AdminPage() {
     );
   }
 
-  const pendingUsers = await prisma.user.findMany({
-    where: { approved: false },
+  // Nessun filtro di ruolo: VOLONTARIA e ADMIN compaiono entrambe, con il
+  // ruolo mostrato esplicitamente (vedi mod/MOD9c.md per il perché).
+  const utenti = await prisma.user.findMany({
     orderBy: { createdAt: "asc" },
-    select: { id: true, name: true, email: true, createdAt: true },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      createdAt: true,
+      approved: true,
+      cellulare: true,
+      note: true,
+    },
   });
+
+  // Date e null non serializzabili/scomodi come props a un client
+  // component: normalizzati qui prima di passarli giù.
+  const serializzati = utenti.map((u) => ({
+    ...u,
+    createdAt: u.createdAt.toISOString(),
+    cellulare: u.cellulare ?? "",
+    note: u.note ?? "",
+  }));
 
   return (
     <div className="flex flex-1 flex-col items-center gap-6 bg-teal-50 px-4 py-10 dark:bg-[#04120f]">
       <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
-        Richieste di registrazione in attesa
+        Amministrazione utenti
       </h1>
 
-      <PendingUsers
-        initialUsers={pendingUsers.map((u) => ({
-          ...u,
-          // Date non serializzabili come props a un client component:
-          // vanno convertite in stringa ISO prima di passarle giù.
-          createdAt: u.createdAt.toISOString(),
-        }))}
+      <UtentiList
+        inAttesa={serializzati.filter((u) => !u.approved)}
+        confermati={serializzati.filter((u) => u.approved)}
+        // Serve alla UI per nascondere Elimina/Cambia ruolo sulla propria
+        // riga: la vera guardia è comunque lato server in ogni rotta.
+        idUtenteCorrente={Number(session.user.id)}
       />
     </div>
   );
