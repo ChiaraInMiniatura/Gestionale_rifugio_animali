@@ -12,15 +12,18 @@ export function EliminaAnimaleButton({
   animaleId,
   nome,
   haEventiClinici,
+  haAdozioni,
 }: {
   animaleId: number;
   nome: string;
-  // Calcolato dal server component chiamante (animale.eventiClinici.length
-  // > 0): evita una query aggiuntiva qui solo per saperlo. La FK
-  // EventoClinico → Animale è onDelete: Cascade, quindi eliminare
-  // l'animale elimina silenziosamente anche la sua cartella clinica: chi
-  // conferma deve saperlo prima di procedere, non scoprirlo dopo.
+  // Calcolati dal server component chiamante (animale.eventiClinici.length
+  // > 0 / animale.adozioni.length > 0): evita query aggiuntive qui solo
+  // per saperlo. Entrambe le relazioni sono onDelete: Cascade, quindi
+  // eliminare l'animale elimina silenziosamente anche la sua cartella
+  // clinica e il suo storico affidi/adozioni: chi conferma deve saperlo
+  // prima di procedere, non scoprirlo dopo.
   haEventiClinici: boolean;
+  haAdozioni: boolean;
 }) {
   const router = useRouter();
   const [eliminando, setEliminando] = useState(false);
@@ -29,11 +32,20 @@ export function EliminaAnimaleButton({
   async function handleElimina() {
     // Conferma esplicita: azione distruttiva e irreversibile, pensata
     // per utenti finali non tecnici (anche anziani) che non devono poter
-    // eliminare un animale con un click accidentale. Testo diverso se
-    // ci sono eventi clinici collegati, che andrebbero persi insieme.
-    const testoConferma = haEventiClinici
-      ? "Questo animale ha anche una cartella clinica: eliminandolo, tutti i dati clinici collegati (vaccini, terapie, visite) verranno eliminati definitivamente. Sei davvero sicura/o di voler procedere?"
-      : `Eliminare definitivamente ${nome}? L'operazione non è annullabile.`;
+    // eliminare un animale con un click accidentale. Testo diverso se ci
+    // sono dati collegati che andrebbero persi insieme (cartella clinica
+    // e/o storico affidi/adozioni).
+    let testoConferma = `Eliminare definitivamente ${nome}? L'operazione non è annullabile.`;
+    if (haEventiClinici && haAdozioni) {
+      testoConferma =
+        "Questo animale ha anche una cartella clinica e uno storico affidi/adozioni: eliminandolo, tutti questi dati verranno eliminati definitivamente. Sei davvero sicura/o di voler procedere?";
+    } else if (haEventiClinici) {
+      testoConferma =
+        "Questo animale ha anche una cartella clinica: eliminandolo, tutti i dati clinici collegati (vaccini, terapie, visite) verranno eliminati definitivamente. Sei davvero sicura/o di voler procedere?";
+    } else if (haAdozioni) {
+      testoConferma =
+        "Questo animale ha anche uno storico affidi/adozioni: eliminandolo, tutti questi dati verranno eliminati definitivamente. Sei davvero sicura/o di voler procedere?";
+    }
     const confermato = window.confirm(testoConferma);
     if (!confermato) return;
 

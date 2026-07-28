@@ -120,6 +120,10 @@ model Animale {
   /// Cartella clinica dell'animale: uno-a-molti, si somma nel tempo e non
   /// si sostituisce mai (ogni evento resta come storico).
   eventiClinici EventoClinico[]
+  /// Storico affidi/adozioni: stesso principio di eventiClinici, si
+  /// accumula nel tempo (più cicli affido/adozione/rientro sullo stesso
+  /// animale restano tutti visibili).
+  adozioni      Adozione[]
 }
 
 /// Categoria dell'evento clinico. Determina solo la classificazione in
@@ -190,4 +194,45 @@ model EventoClinico {
   createdAt     DateTime         @default(now())
   /// Aggiornato automaticamente da Prisma ad ogni modifica del record.
   updatedAt     DateTime         @updatedAt
+}
+
+/// Distingue un affido temporaneo da un'adozione definitiva sullo stesso
+/// record: quando un affido si trasforma in adozione, il record esistente
+/// cambia tipo invece di crearne uno nuovo (la relazione con quella
+/// persona è la stessa, cambia solo la sua natura).
+enum TipoRapporto {
+  AFFIDO
+  ADOZIONE
+}
+
+/// Rapporto tra un animale e la persona che lo ha in affido o lo ha
+/// adottato. Si accumula nel tempo come EventoClinico: un nuovo rapporto
+/// (persona diversa, o stessa persona dopo un rientro) crea una nuova
+/// riga, non sovrascrive la precedente — così la cronologia resta
+/// leggibile anche con più cicli affido/adozione/rientro sullo stesso
+/// animale.
+model Adozione {
+  id         Int          @id @default(autoincrement())
+  animaleId  Int
+  /// onDelete: Cascade, stesso principio di EventoClinico — eliminare
+  /// l'animale elimina anche il suo storico di affidi/adozioni.
+  animale    Animale      @relation(fields: [animaleId], references: [id], onDelete: Cascade)
+  tipo       TipoRapporto
+  nome       String
+  cognome    String
+  cellulare  String
+  /// Estremi del documento d'identità (tipo + numero, es. "CI AB1234567"):
+  /// dato sensibile, per questo la creazione/modifica di Adozione resta
+  /// ADMIN-only come il cambio di stato a cui è collegata, mai
+  /// visibile/modificabile dalle VOLONTARIA.
+  documento  String
+  dataInizio DateTime
+  /// null = rapporto ancora in corso (l'animale non è tornato al
+  /// rifugio); valorizzata quando l'ADMIN riporta lo stato a
+  /// DISPONIBILE, chiude questo record.
+  dataFine   DateTime?
+  note       String?
+  createdAt  DateTime     @default(now())
+  /// Aggiornato automaticamente da Prisma ad ogni modifica del record.
+  updatedAt  DateTime     @updatedAt
 }

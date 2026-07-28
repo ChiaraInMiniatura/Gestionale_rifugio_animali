@@ -3,7 +3,10 @@
 // ADMIN-only). Il PATCH accetta "stato" oppure gli altri campi in
 // CAMPI_BASE, mai entrambi nella stessa richiesta: sono due permessi
 // diversi (chiunque approvato vs solo ADMIN) e mescolarli renderebbe
-// ambiguo cosa autorizzare.
+// ambiguo cosa autorizzare. Il ramo "stato" gestisce anche il record
+// Adozione collegato (affido/adozione con dati della persona) quando lo
+// stato passa a/da IN_AFFIDO o ADOTTATO — vedi il commento più sotto,
+// dentro il ramo, per la logica completa.
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -48,14 +51,20 @@ export async function GET(
 /**
  * Aggiorna un animale: due modalità mutuamente esclusive nello stesso
  * body, distinte dalla presenza del campo "stato".
- * - Con "stato": cambia solo lo stato di adozione (ADMIN-only).
+ * - Con "stato": cambia solo lo stato di adozione (ADMIN-only). Se lo
+ *   stato passa a IN_AFFIDO/ADOTTATO senza un rapporto Adozione già
+ *   aperto per l'animale, richiede anche nome/cognome/cellulare/documento
+ *   (nuovo rapporto); se un rapporto è già aperto, li aggiorna solo se
+ *   forniti (es. affido che diventa adozione, dati invariati). Se lo
+ *   stato torna a DISPONIBILE, chiude l'eventuale rapporto aperto.
  * - Senza "stato": aggiorna i campi di CAMPI_BASE (chiunque approvato).
  * @param request corpo JSON da rivalidare con lo schema Zod pertinente al
  *   ramo (statoAnimaleSchema oppure animaleSchema).
  * @param params contiene l'id dell'animale da modificare.
  * @returns 200 con l'animale aggiornato; 400 per body non valido, Zod
- *   fallito, o "stato" misto ad altri campi; 403 per sessione non valida
- *   o (nel ramo stato) ruolo diverso da ADMIN; 404 se non esiste.
+ *   fallito, "stato" misto ad altri campi, o dati persona mancanti per un
+ *   nuovo affido/adozione; 403 per sessione non valida o (nel ramo stato)
+ *   ruolo diverso da ADMIN; 404 se non esiste.
  */
 export async function PATCH(
   request: Request,
@@ -123,9 +132,83 @@ export async function PATCH(
       );
     }
 
+    const {
+      stato: nuovoStato,
+      personaNome: nome,
+      personaCognome: cognome,
+      personaCellulare: cellulare,
+      personaDocumento: documento,
+      personaNote: note,
+    } = parsed.data;
+
+    // Il record Adozione "aperto" (dataFine: null) rappresenta il rapporto
+    // in corso con l'animale, se c'è: la sua presenza/assenza decide se
+    // questo cambio di stato crea un nuovo rapporto, aggiorna quello
+    // esistente, o lo chiude — non è esprimibile in un semplice campo
+    // Zod, va verificato qui.
+    const adozioneAperta = await prisma.adozione.findFirst({
+      where: { animaleId, dataFine: null },
+    });
+
+    if (nuovoStato === "DISPONIBILE") {
+      // Rientro al rifugio: chiude l'eventuale rapporto in corso, nessun
+      // dato persona richiesto per questa transizione.
+      if (adozioneAperta) {
+        await prisma.adozione.update({
+          where: { id: adozioneAperta.id },
+          data: { dataFine: new Date() },
+        });
+      }
+    } else {
+      // IN_AFFIDO o ADOTTATO: il tipo di rapporto segue lo stato scelto.
+      const tipo = nuovoStato === "ADOTTATO" ? "ADOZIONE" : "AFFIDO";
+
+      if (!adozioneAperta) {
+        // Nessun rapporto in corso: è un nuovo affido/adozione, i dati
+        // della persona sono obbligatori.
+        if (!nome || !cognome || !cellulare || !documento) {
+          return NextResponse.json(
+            {
+              message:
+                "Nome, cognome, cellulare e documento sono obbligatori per affidare o adottare un animale",
+            },
+            { status: 400 }
+          );
+        }
+        await prisma.adozione.create({
+          data: {
+            animaleId,
+            tipo,
+            nome,
+            cognome,
+            cellulare,
+            documento,
+            note: note && note.length > 0 ? note : null,
+            dataInizio: new Date(),
+          },
+        });
+      } else {
+        // Rapporto già in corso (es. un affido che diventa adozione):
+        // cambia solo il tipo, dataInizio resta quella originale. I dati
+        // persona si aggiornano solo se rinviati (permette di correggerli
+        // senza obbligare a reinserirli tutti).
+        await prisma.adozione.update({
+          where: { id: adozioneAperta.id },
+          data: {
+            tipo,
+            ...(nome ? { nome } : {}),
+            ...(cognome ? { cognome } : {}),
+            ...(cellulare ? { cellulare } : {}),
+            ...(documento ? { documento } : {}),
+            ...(note !== undefined ? { note: note.length > 0 ? note : null } : {}),
+          },
+        });
+      }
+    }
+
     const animale = await prisma.animale.update({
       where: { id: animaleId },
-      data: { stato: parsed.data.stato },
+      data: { stato: nuovoStato },
     });
     return NextResponse.json(animale);
   }

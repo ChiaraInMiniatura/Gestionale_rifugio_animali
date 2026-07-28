@@ -1,8 +1,8 @@
 // Dettaglio di un animale: unica pagina che mostra la foto (grande, in
-// fondo), la cartella clinica (eventi + scadenze) e i controlli riservati
-// agli ADMIN (cambio stato, eliminazione). Fallback testuale esplicito per
-// ogni campo opzionale, così l'assenza di un dato è sempre comunicata,
-// mai lasciata come spazio vuoto.
+// fondo), la cartella clinica (eventi + scadenze), lo storico affidi/
+// adozioni e i controlli riservati agli ADMIN (cambio stato, eliminazione).
+// Fallback testuale esplicito per ogni campo opzionale, così l'assenza di
+// un dato è sempre comunicata, mai lasciata come spazio vuoto.
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -15,6 +15,7 @@ import { calcolaEta } from "@/lib/eta";
 import { calcolaStatoEvento, coloreScadenza } from "@/lib/scadenza";
 import { STATO_LABEL } from "@/lib/stato-animale";
 import { TIPO_EVENTO_LABEL } from "@/lib/evento-clinico-label";
+import { TIPO_RAPPORTO_LABEL } from "@/lib/tipo-rapporto-label";
 import { StatoControl } from "@/components/animali/stato-control";
 import { EliminaAnimaleButton } from "@/components/animali/elimina-animale-button";
 import { EliminaEventoButton } from "@/components/animali/elimina-evento-button";
@@ -31,14 +32,17 @@ export default async function AnimaleDettaglioPage({
     notFound();
   }
 
-  // Sessione e animale (con la sua cartella clinica, più recente prima)
-  // recuperati in parallelo: sono indipendenti, non c'è motivo di
-  // attendere l'uno prima di iniziare l'altro.
+  // Sessione e animale (con cartella clinica e storico affidi/adozioni,
+  // più recenti prima) recuperati in parallelo: sono indipendenti, non
+  // c'è motivo di attendere l'uno prima di iniziare l'altro.
   const [session, animale] = await Promise.all([
     getServerSession(authOptions),
     prisma.animale.findUnique({
       where: { id: animaleId },
-      include: { eventiClinici: { orderBy: { data: "desc" } } },
+      include: {
+        eventiClinici: { orderBy: { data: "desc" } },
+        adozioni: { orderBy: { dataInizio: "desc" } },
+      },
     }),
   ]);
 
@@ -47,6 +51,10 @@ export default async function AnimaleDettaglioPage({
   }
 
   const isAdmin = session?.user.role === "ADMIN";
+  // Il rapporto ancora in corso (se c'è): precompila i campi persona in
+  // StatoControl quando si passa da IN_AFFIDO ad ADOTTATO sullo stesso
+  // rapporto, invece di richiederli di nuovo da zero.
+  const adozioneAperta = animale.adozioni.find((a) => a.dataFine === null) ?? null;
 
   return (
     <div className="flex flex-1 flex-col items-center gap-6 bg-teal-50 px-4 py-10 dark:bg-[#04120f]">
@@ -115,7 +123,19 @@ export default async function AnimaleDettaglioPage({
           {isAdmin ? (
             // Solo l'ADMIN vede il controllo interattivo (select + Salva);
             // le altre volontarie vedono lo stato in sola lettura.
-            <StatoControl animaleId={animale.id} statoAttuale={animale.stato} />
+            <StatoControl
+              animaleId={animale.id}
+              statoAttuale={animale.stato}
+              adozioneAperta={
+                adozioneAperta && {
+                  nome: adozioneAperta.nome,
+                  cognome: adozioneAperta.cognome,
+                  cellulare: adozioneAperta.cellulare,
+                  documento: adozioneAperta.documento,
+                  note: adozioneAperta.note ?? "",
+                }
+              }
+            />
           ) : (
             <p className="text-sm text-zinc-700 dark:text-zinc-300">
               {STATO_LABEL[animale.stato]}
@@ -240,12 +260,58 @@ export default async function AnimaleDettaglioPage({
           )}
         </div>
 
+        <div className="mt-6 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+          <p className="mb-3 text-sm font-medium text-zinc-900 dark:text-zinc-50">
+            Storico affidi/adozioni
+          </p>
+
+          {animale.adozioni.length === 0 ? (
+            <p className="text-sm text-zinc-700 dark:text-zinc-300">
+              Nessun affido o adozione registrati.
+            </p>
+          ) : (
+            <ul className="space-y-3">
+              {animale.adozioni.map((adozione) => (
+                <li
+                  key={adozione.id}
+                  className="rounded-md border border-zinc-200 p-3 text-sm dark:border-zinc-800"
+                >
+                  <p className="font-medium text-zinc-900 dark:text-zinc-50">
+                    {TIPO_RAPPORTO_LABEL[adozione.tipo]} —{" "}
+                    <span className="capitalize">
+                      {adozione.nome} {adozione.cognome}
+                    </span>
+                  </p>
+                  <p className="text-zinc-700 dark:text-zinc-300">
+                    {format(adozione.dataInizio, "d MMMM yyyy", { locale: it })} →{" "}
+                    {adozione.dataFine
+                      ? format(adozione.dataFine, "d MMMM yyyy", { locale: it })
+                      : "in corso"}
+                  </p>
+                  {/* Cellulare e documento: dato sensibile, visibile solo
+                      all'ADMIN, mai alla VOLONTARIA (creazione/modifica
+                      già ADMIN-only tramite StatoControl). */}
+                  {isAdmin && (
+                    <p className="text-zinc-700 dark:text-zinc-300">
+                      {adozione.cellulare} · {adozione.documento}
+                    </p>
+                  )}
+                  {adozione.note && (
+                    <p className="mt-1 text-zinc-700 dark:text-zinc-300">{adozione.note}</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
         {isAdmin && (
           <div className="mt-6 border-t border-zinc-200 pt-4 dark:border-zinc-800">
             <EliminaAnimaleButton
               animaleId={animale.id}
               nome={animale.nome}
               haEventiClinici={animale.eventiClinici.length > 0}
+              haAdozioni={animale.adozioni.length > 0}
             />
           </div>
         )}

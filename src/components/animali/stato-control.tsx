@@ -3,6 +3,13 @@
 // dal salvataggio effettivo: cambiare la select non chiama subito l'API,
 // serve un click esplicito su "Salva", per evitare che uno stato critico
 // (es. "Adottato") venga impostato per errore con un solo cambio di menu.
+//
+// Quando la selezione è IN_AFFIDO o ADOTTATO, compaiono i campi della
+// persona (nome/cognome/cellulare/documento/nota): precompilati se esiste
+// già un rapporto Adozione aperto per l'animale (es. un affido che
+// diventa adozione, dati invariati salvo correzioni), vuoti altrimenti —
+// in quel caso obbligatori, la rotta API rifiuta un nuovo affido/adozione
+// senza questi dati (vedi [id]/route.ts).
 
 "use client";
 
@@ -13,20 +20,56 @@ import { STATO_LABEL } from "@/lib/stato-animale";
 
 const STATI = Object.values(StatoAnimale);
 
+type AdozioneAperta = {
+  nome: string;
+  cognome: string;
+  cellulare: string;
+  documento: string;
+  note: string;
+};
+
 export function StatoControl({
   animaleId,
   statoAttuale,
+  adozioneAperta,
 }: {
   animaleId: number;
   statoAttuale: StatoAnimale;
+  adozioneAperta: AdozioneAperta | null;
 }) {
   const router = useRouter();
   // "stato" è la selezione corrente nel form, non ancora salvata:
   // statoAttuale resta il valore confermato sul server, usato per capire
   // se c'è una modifica pendente (vedi disabled del bottone Salva sotto).
   const [stato, setStato] = useState(statoAttuale);
+  const [nome, setNome] = useState(adozioneAperta?.nome ?? "");
+  const [cognome, setCognome] = useState(adozioneAperta?.cognome ?? "");
+  const [cellulare, setCellulare] = useState(adozioneAperta?.cellulare ?? "");
+  const [documento, setDocumento] = useState(adozioneAperta?.documento ?? "");
+  const [note, setNote] = useState(adozioneAperta?.note ?? "");
   const [salvataggio, setSalvataggio] = useState(false);
   const [errore, setErrore] = useState<string | null>(null);
+
+  const richiedeDatiPersona = stato === "IN_AFFIDO" || stato === "ADOTTATO";
+  // I dati sono obbligatori solo se si sta aprendo un rapporto nuovo
+  // (nessun rapporto già aperto): se ce n'è già uno, restano modificabili
+  // ma facoltativi (la rotta API li lascia invariati se non inviati).
+  const datiObbligatori = richiedeDatiPersona && !adozioneAperta;
+  // Vero anche senza cambiare lo stato: serve per correggere un dato
+  // sbagliato (o aggiornare un recapito) sul rapporto già aperto, senza
+  // dover passare per un cambio di stato che non c'entra. Nota: questo
+  // sovrascrive i dati sullo stesso record — per un vero cambio di
+  // persona (affidatario diverso), meglio chiudere il rapporto e
+  // riaprirne uno nuovo, così lo storico resta accurato.
+  const personaModificata =
+    richiedeDatiPersona &&
+    adozioneAperta !== null &&
+    (nome !== adozioneAperta.nome ||
+      cognome !== adozioneAperta.cognome ||
+      cellulare !== adozioneAperta.cellulare ||
+      documento !== adozioneAperta.documento ||
+      note !== adozioneAperta.note);
+  const cisonoModifiche = stato !== statoAttuale || personaModificata;
 
   async function handleSalva() {
     setErrore(null);
@@ -36,9 +79,21 @@ export function StatoControl({
       const res = await fetch(`/api/animali/${animaleId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        // Solo "stato" nel body: la rotta API rifiuta la richiesta se
-        // mischiata ad altri campi (vedi CAMPI_BASE in [id]/route.ts).
-        body: JSON.stringify({ stato }),
+        // Solo "stato" (+ dati persona quando pertinenti) nel body: i
+        // campi persona sono prefissati "persona*" per non collidere con
+        // "nome"/"note" di CAMPI_BASE (vedi validations/animale.ts).
+        body: JSON.stringify(
+          richiedeDatiPersona
+            ? {
+                stato,
+                personaNome: nome,
+                personaCognome: cognome,
+                personaCellulare: cellulare,
+                personaDocumento: documento,
+                personaNote: note,
+              }
+            : { stato }
+        ),
       });
 
       if (!res.ok) {
@@ -57,12 +112,12 @@ export function StatoControl({
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <select
           value={stato}
           disabled={salvataggio}
           onChange={(e) => setStato(e.target.value as StatoAnimale)}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
         >
           {STATI.map((s) => (
             <option key={s} value={s}>
@@ -73,15 +128,65 @@ export function StatoControl({
         <button
           type="button"
           onClick={handleSalva}
-          // Disabilitato se non c'è nulla da salvare (selezione invariata):
-          // evita chiamate API inutili e comunica visivamente che non ci
-          // sono modifiche pendenti.
-          disabled={salvataggio || stato === statoAttuale}
+          // Disabilitato se non c'è nulla da salvare (né lo stato né i
+          // dati della persona sono cambiati): evita chiamate API inutili
+          // e comunica visivamente che non ci sono modifiche pendenti.
+          disabled={salvataggio || !cisonoModifiche}
           className="rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white transition hover:scale-105 hover:bg-teal-600 active:scale-95 active:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
         >
           {salvataggio ? "Salvataggio..." : "Salva"}
         </button>
       </div>
+
+      {richiedeDatiPersona && (
+        <div className="mt-3 space-y-2 rounded-md border border-zinc-200 p-3 dark:border-zinc-800">
+          <p className="text-xs text-zinc-700 dark:text-zinc-300">
+            {adozioneAperta
+              ? "Dati della persona (già salvati, correggi solo se serve)"
+              : "Dati della persona (obbligatori per affidare/adottare)"}
+          </p>
+          <input
+            type="text"
+            placeholder="Nome"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            required={datiObbligatori}
+            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          />
+          <input
+            type="text"
+            placeholder="Cognome"
+            value={cognome}
+            onChange={(e) => setCognome(e.target.value)}
+            required={datiObbligatori}
+            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          />
+          <input
+            type="text"
+            placeholder="Cellulare"
+            value={cellulare}
+            onChange={(e) => setCellulare(e.target.value)}
+            required={datiObbligatori}
+            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          />
+          <input
+            type="text"
+            placeholder="Documento (es. CI AB1234567)"
+            value={documento}
+            onChange={(e) => setDocumento(e.target.value)}
+            required={datiObbligatori}
+            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          />
+          <textarea
+            placeholder="Note (facoltative)"
+            rows={2}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          />
+        </div>
+      )}
+
       {errore && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{errore}</p>}
     </div>
   );

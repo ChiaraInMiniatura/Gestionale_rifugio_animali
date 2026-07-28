@@ -62,8 +62,22 @@ export function normalizzaAnimale(input: AnimaleInput) {
 // animaleSchema, non un campo opzionale al suo interno: la rotta PATCH
 // in [id]/route.ts usa la presenza/assenza del campo "stato" nel body
 // per decidere quale dei due schemi applicare (vedi CAMPI_BASE lì).
+//
+// I campi persona sono prefissati "persona*" (non "nome"/"note" nudi):
+// altrimenti collidono con i campi omonimi di CAMPI_BASE (nome e note
+// dell'ANIMALE), facendo scattare per errore il rifiuto "stato misto ad
+// altri campi" anche quando si sta solo aprendo un affido/adozione.
+// Tutti opzionali qui: se siano obbligatori dipende da uno stato che solo
+// la rotta API conosce (esiste già un record Adozione aperto per questo
+// animale?), non esprimibile in uno schema Zod statico — quel controllo
+// resta imperativo lato route, questo schema valida solo forma/tipo.
 export const statoAnimaleSchema = z.object({
   stato: z.enum(statoValues),
+  personaNome: z.string().trim().min(1).optional(),
+  personaCognome: z.string().trim().min(1).optional(),
+  personaCellulare: z.string().trim().min(1).optional(),
+  personaDocumento: z.string().trim().min(1).optional(),
+  personaNote: z.string().trim().optional(),
 });
 
 export type StatoAnimaleInput = z.infer<typeof statoAnimaleSchema>;
