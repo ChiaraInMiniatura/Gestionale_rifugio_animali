@@ -26,10 +26,10 @@ export default async function DashboardPage() {
   const farmaciOggi = terapieGiornaliere.filter((evento) => terapiaAttivaOggi(evento));
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-8 bg-teal-50/40 px-4 py-10 dark:bg-[#04120f]">
+    <div className="flex flex-1 flex-col items-center gap-8 bg-teal-50 px-4 py-10 dark:bg-[#04120f]">
       <div className="text-center">
         <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Benvenuta, {session?.user.name}
+          Benvenuta, <span className="capitalize">{session?.user.name}</span>
         </h1>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
           Ruolo: {session?.user.role}
@@ -46,7 +46,7 @@ export default async function DashboardPage() {
             Nessuna terapia giornaliera attiva oggi.
           </p>
         ) : (
-          <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+          <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950">
             {farmaciOggi.map((evento) => (
               <li key={evento.id}>
                 <Link

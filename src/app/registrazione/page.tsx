@@ -50,7 +50,7 @@ export default function RegistrazionePage() {
 
   if (inviata) {
     return (
-      <div className="flex flex-1 items-center justify-center bg-teal-50/40 px-4 dark:bg-[#04120f]">
+      <div className="flex flex-1 items-center justify-center bg-teal-50 px-4 dark:bg-[#04120f]">
         <p className="max-w-md text-center text-lg text-zinc-800 dark:text-zinc-200">
           Registrazione inviata. Il tuo account è in attesa di approvazione.
         </p>
@@ -59,7 +59,7 @@ export default function RegistrazionePage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-teal-50/40 px-4 dark:bg-[#04120f]">
+    <div className="flex flex-1 items-center justify-center bg-teal-50 px-4 dark:bg-[#04120f]">
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate

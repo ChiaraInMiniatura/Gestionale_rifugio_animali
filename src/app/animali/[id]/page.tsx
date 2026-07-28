@@ -49,7 +49,7 @@ export default async function AnimaleDettaglioPage({
   const isAdmin = session?.user.role === "ADMIN";
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-6 bg-teal-50/40 px-4 py-10 dark:bg-[#04120f]">
+    <div className="flex flex-1 flex-col items-center gap-6 bg-teal-50 px-4 py-10 dark:bg-[#04120f]">
       <div className="w-full max-w-lg rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold capitalize text-zinc-900 dark:text-zinc-50">

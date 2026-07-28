@@ -13,7 +13,7 @@ export default async function AdminPage() {
 
   if (session?.user.role !== "ADMIN") {
     return (
-      <div className="flex flex-1 items-center justify-center bg-teal-50/40 px-4 dark:bg-[#04120f]">
+      <div className="flex flex-1 items-center justify-center bg-teal-50 px-4 dark:bg-[#04120f]">
         <p className="text-zinc-700 dark:text-zinc-300">Accesso non consentito.</p>
       </div>
     );
@@ -26,7 +26,7 @@ export default async function AdminPage() {
   });
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-6 bg-teal-50/40 px-4 py-10 dark:bg-[#04120f]">
+    <div className="flex flex-1 flex-col items-center gap-6 bg-teal-50 px-4 py-10 dark:bg-[#04120f]">
       <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
         Richieste di registrazione in attesa
       </h1>

@@ -3,19 +3,17 @@
 // logout, sempre visibile indipendentemente dalla rotta.
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Nunito } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { LogoutButton } from "@/components/logout-button";
 import { NavLinks } from "@/components/nav-links";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// Nunito: arrotondato e amichevole, scelto al posto del Geist di default
+// (mai realmente applicato finora, vedi globals.css) per un'app di un
+// rifugio pensata anche per un pubblico anziano.
+const nunito = Nunito({
+  variable: "--font-nunito",
   subsets: ["latin"],
 });
 
@@ -32,7 +30,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${nunito.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {/* Providers: qui vivono SessionProvider (Auth.js) e QueryClientProvider

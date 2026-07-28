@@ -16,8 +16,8 @@ const ADMIN_PREFIX = "/admin";
  * autenticato, approvato e (per /admin) abbia il ruolo ADMIN.
  * @param request richiesta in ingresso intercettata da Next.js.
  * @returns redirect a /login se manca un token valido o l'utente non è
- *   approvato; redirect a / se un non-ADMIN prova ad accedere a /admin;
- *   altrimenti lascia proseguire la richiesta (NextResponse.next()).
+ *   approvato; redirect a /dashboard se un non-ADMIN prova ad accedere a
+ *   /admin; altrimenti lascia proseguire la richiesta (NextResponse.next()).
  */
 export async function proxy(request: NextRequest) {
   const loginUrl = new URL("/login", request.url);
@@ -51,7 +51,7 @@ export async function proxy(request: NextRequest) {
   // Solo le rotte sotto /admin richiedono il ruolo ADMIN; le altre rotte
   // in matcher (dashboard, animali) bastano sessione+approvazione.
   if (request.nextUrl.pathname.startsWith(ADMIN_PREFIX) && user.role !== "ADMIN") {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return NextResponse.next();

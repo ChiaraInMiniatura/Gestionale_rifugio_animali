@@ -43,12 +43,12 @@ export default function LoginPage() {
     // router.refresh() forza il re-fetch dei server component (es.
     // header con NavLinks) così da riflettere subito la nuova sessione,
     // cosa che router.push da solo non garantirebbe.
-    router.push("/");
+    router.push("/dashboard");
     router.refresh();
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-teal-50/40 px-4 dark:bg-[#04120f]">
+    <div className="flex flex-1 items-center justify-center bg-teal-50 px-4 dark:bg-[#04120f]">
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate

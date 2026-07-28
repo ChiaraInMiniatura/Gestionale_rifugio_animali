@@ -75,14 +75,14 @@ export function PendingUsers({ initialUsers }: { initialUsers: PendingUser[] }) 
         <p className="mb-4 text-sm text-red-600 dark:text-red-400">{errore}</p>
       )}
 
-      <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+      <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950">
         {users.map((user) => (
           <li
             key={user.id}
             className="flex items-center justify-between gap-4 p-4"
           >
             <div>
-              <p className="font-medium text-zinc-900 dark:text-zinc-50">
+              <p className="font-medium capitalize text-zinc-900 dark:text-zinc-50">
                 {user.name}
               </p>
               <p className="text-sm text-zinc-600 dark:text-zinc-400">

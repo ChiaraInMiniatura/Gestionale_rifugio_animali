@@ -60,7 +60,7 @@ export default async function ScadenzePage() {
     .sort((a, b) => a.data.getTime() - b.data.getTime());
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-6 bg-teal-50/40 px-4 py-10 dark:bg-[#04120f]">
+    <div className="flex flex-1 flex-col items-center gap-6 bg-teal-50 px-4 py-10 dark:bg-[#04120f]">
       <div className="w-full max-w-2xl">
         <h1 className="mb-6 text-xl font-semibold text-zinc-900 dark:text-zinc-50">
           Scadenze
@@ -74,7 +74,7 @@ export default async function ScadenzePage() {
             Nessuna scadenza imminente o passata.
           </p>
         ) : (
-          <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+          <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950">
             {scadenzeImminenti.map(({ evento, data, stato }) => (
               <li key={evento.id}>
                 <Link
@@ -104,7 +104,7 @@ export default async function ScadenzePage() {
             <h2 className="mb-3 mt-8 text-sm font-medium text-zinc-900 dark:text-zinc-50">
               Scadenze future
             </h2>
-            <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+            <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950">
               {scadenzeFuture.map(({ evento, data, stato }) => (
                 <li key={evento.id}>
                   <Link
