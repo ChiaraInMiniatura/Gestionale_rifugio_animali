@@ -36,7 +36,9 @@ export default function RootLayout({
         {/* Providers: qui vivono SessionProvider (Auth.js) e QueryClientProvider
             (React Query), condivisi da tutte le pagine client sotto. */}
         <Providers>
-          <header className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
+          {/* print:hidden — l'header di navigazione non ha senso su un
+              documento stampato (es. la scheda clinica in .../scheda). */}
+          <header className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 print:hidden dark:border-zinc-800">
             {/* NavLinks mostra/nasconde i link in base a sessione e ruolo
                 dell'utente corrente (vedi src/components/nav-links.tsx). */}
             <NavLinks />

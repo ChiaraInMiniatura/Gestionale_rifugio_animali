@@ -25,6 +25,7 @@ Gestionale web per un rifugio per cani, ad uso delle volontarie e degli admin de
 - Richiami periodici (mensile o annuale, es. antiparassitario o vaccino): confermando che il richiamo è avvenuto, l'app genera da sola il prossimo evento della stessa serie (stesso tipo/prodotto, data spostata di un mese/anno), con una nota che ne spiega l'origine automatica — non serve reinserirlo a mano ogni volta
 - Dashboard (`/dashboard`): sezione "Farmaci di oggi" con l'elenco delle terapie continuative attive nella giornata corrente, su tutti gli animali del rifugio
 - Storico affidi/adozioni per ogni animale (sezione dedicata nel dettaglio): tipo di rapporto, persona coinvolta e periodo (in corso o concluso), più recenti prima. Cellulare e documento della persona sono dati sensibili, visibili solo all'ADMIN — una VOLONTARIA vede solo tipo/nome/periodo/note
+- Scheda clinica stampabile/scaricabile (link "Scarica scheda clinica" nel dettaglio animale): dati anagrafici di base e cartella clinica in una pagina pensata per essere stampata o salvata come PDF dal browser, utile prima di eliminare un animale o per consegnarla a un veterinario/nuovo affidatario. Non include lo storico affidi/adozioni (dati sensibili di persone terze) né i controlli interattivi della cartella clinica; resta sempre chiara (sfondo bianco) a prescindere dal tema scelto nel browser
 
 ## Modello dati
 

@@ -151,12 +151,20 @@ export default async function AnimaleDettaglioPage({
             <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
               Cartella clinica
             </p>
-            <Link
-              href={`/animali/${animale.id}/eventi/nuovo`}
-              className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
-            >
-              Aggiungi evento
-            </Link>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href={`/animali/${animale.id}/scheda`}
+                className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+              >
+                Scarica scheda clinica
+              </Link>
+              <Link
+                href={`/animali/${animale.id}/eventi/nuovo`}
+                className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+              >
+                Aggiungi evento
+              </Link>
+            </div>
           </div>
 
           {animale.eventiClinici.length === 0 ? (
