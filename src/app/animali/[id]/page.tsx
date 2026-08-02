@@ -214,11 +214,19 @@ export default async function AnimaleDettaglioPage({
                           <>
                             <p
                               className={
-                                campo === "data"
-                                  ? coloreScadenza(stato)
-                                  : "text-ink-soft"
+                                // Confermato: verde, indipendentemente da
+                                // "stato" — la conferma riguarda solo questo
+                                // appuntamento, non l'eventuale prossimo
+                                // richiamo sotto (quello ha una sua scadenza
+                                // indipendente, colorata per conto suo).
+                                evento.confermato
+                                  ? "font-medium text-positive"
+                                  : campo === "data"
+                                    ? coloreScadenza(stato)
+                                    : "text-ink-soft"
                               }
                             >
+                              {evento.confermato && "✓ "}
                               {format(evento.data, "d MMMM yyyy, HH:mm", { locale: it })}
                             </p>
                             {evento.dataScadenza && (

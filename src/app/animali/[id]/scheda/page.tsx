@@ -142,7 +142,16 @@ export default async function SchedaClinicaPage({
                       </p>
                     ) : (
                       <>
-                        <p className={campo === "data" ? coloreScadenza(stato) : "text-zinc-700"}>
+                        <p
+                          className={
+                            evento.confermato
+                              ? "font-medium text-green-700"
+                              : campo === "data"
+                                ? coloreScadenza(stato)
+                                : "text-zinc-700"
+                          }
+                        >
+                          {evento.confermato && "✓ "}
                           {format(evento.data, "d MMMM yyyy, HH:mm", { locale: it })}
                         </p>
                         {evento.dataScadenza && (
