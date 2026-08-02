@@ -61,7 +61,7 @@ export default async function ScadenzePage() {
     .sort((a, b) => a.data.getTime() - b.data.getTime());
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-6 bg-teal-50 px-4 py-10 dark:bg-[#04120f]">
+    <div className="flex flex-1 flex-col items-center gap-6 bg-teal-100 px-4 py-10 dark:bg-[#04120f]">
       <div className="w-full max-w-2xl">
         <h1 className="mb-6 text-xl font-semibold text-zinc-900 dark:text-zinc-50">
           Scadenze

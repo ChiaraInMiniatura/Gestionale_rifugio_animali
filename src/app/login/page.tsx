@@ -48,7 +48,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-teal-50 px-4 dark:bg-[#04120f]">
+    <div className="flex flex-1 items-center justify-center bg-teal-100 px-4 dark:bg-[#04120f]">
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate

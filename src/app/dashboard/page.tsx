@@ -8,6 +8,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { terapiaAttivaOggi } from "@/lib/scadenza";
+import { InstallaAppButton } from "@/components/installa-app-button";
 
 export default async function DashboardPage() {
   // Il proxy ha già verificato sessione/approvazione a monte; qui si
@@ -26,7 +27,7 @@ export default async function DashboardPage() {
   const farmaciOggi = terapieGiornaliere.filter((evento) => terapiaAttivaOggi(evento));
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-8 bg-teal-50 px-4 py-10 dark:bg-[#04120f]">
+    <div className="flex flex-1 flex-col items-center gap-8 bg-teal-100 px-4 py-10 dark:bg-[#04120f]">
       <div className="text-center">
         <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
           Benvenuta/o, <span className="capitalize">{session?.user.name}</span>
@@ -35,6 +36,8 @@ export default async function DashboardPage() {
           Ruolo: {session?.user.role}
         </p>
       </div>
+
+      <InstallaAppButton />
 
       <div className="w-full max-w-lg">
         <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-50">

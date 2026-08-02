@@ -2,7 +2,7 @@
 // (sessione Auth.js, React Query) e un header comune con navigazione e
 // logout, sempre visibile indipendentemente dalla rotta.
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
@@ -22,6 +22,18 @@ export const metadata: Metadata = {
   description: "Gestionale del rifugio Frida: cani, cartelle sanitarie e adozioni.",
 };
 
+// Colora la barra del browser su mobile (es. Chrome Android) con lo
+// stesso teal del manifest, per coerenza visiva anche prima di installare.
+// width/initialScale: senza questo export Next.js li genera da solo, ma
+// dichiarando un viewport nostro dobbiamo includerli esplicitamente
+// (altrimenti sparisce il tag responsive di default e il sito torna a
+// renderizzare a larghezza desktop su ogni schermo).
+export const viewport: Viewport = {
+  themeColor: "#0f766e",
+  width: "device-width",
+  initialScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,7 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="it"
       className={`${nunito.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
