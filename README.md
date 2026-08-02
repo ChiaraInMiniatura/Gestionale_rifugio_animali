@@ -1,32 +1,81 @@
-# Frida
+# 🐾 Frida
 
-Gestionale web per un rifugio per cani, ad uso delle volontarie e degli admin del rifugio. Pensato per essere usato soprattutto da smartphone, con caratteri e bottoni grandi e un design pensato per volontarie anziane e non tecniche.
+**Gestionale web per un rifugio per cani** — registro animali, cartella clinica,
+scadenzario dei richiami e ciclo adozioni, pensato per essere usato soprattutto
+da smartphone da volontarie non necessariamente pratiche di tecnologia.
 
-## Cosa fa
+## Perché esiste
 
-- Registro cani con cartella sanitaria (vaccini, antiparassitari, cure/interventi) e scadenzario dei richiami
-- Ciclo di vita delle adozioni a stati: disponibile → in affido/adottato → di nuovo disponibile (rientro), con storico completo e dati dell'affidatario/adottante (nome, cognome, cellulare, documento); un affido che diventa adozione aggiorna lo stesso rapporto invece di crearne uno nuovo, mentre più cicli affido/adozione/rientro sullo stesso animale restano tutti visibili nello storico
-- Due ruoli utente:
-  - **VOLONTARIA**: aggiornamenti quotidiani (cani, cartelle sanitarie)
-  - **ADMIN**: gestisce gli stati di adozione e approva i nuovi account
-- I nuovi account nascono come VOLONTARIA non approvata; deve approvarli un ADMIN prima che possano operare
-- Pagina pubblica `/registrazione`: form (nome, email, password) per richiedere un account; l'account resta in attesa di approvazione, senza login immediato
-- Pagina pubblica `/login`: accesso con email e password per gli account già approvati; sessione gestita con Auth.js (JWT). Chi non è ancora approvato riceve un messaggio di attesa invece di entrare. Bottone di logout visibile in alto a destra quando si è collegati
-- Rotte riservate `/dashboard` (qualunque utente loggato e approvato) e `/admin` (solo ADMIN): l'accesso è verificato ad ogni richiesta contro lo stato reale nel database, non solo contro la sessione. Link a queste pagine visibili in header solo se pertinenti al proprio ruolo
-- Pannello admin (`/admin`): tutti gli utenti (volontarie e admin), divisi in "In attesa di approvazione" (Approva/Rifiuta) e "Utenti confermati" (Elimina). Per ciascuno: cambio ruolo volontaria/o ↔ admin, cambio password (impostata direttamente dall'admin, senza self-service per chi la richiede), e una sezione note ad uso esclusivo dell'admin (cellulare, osservazioni pratiche come disponibilità o difficoltà) mai visibile all'utente stesso. Nessuno può eliminarsi o cambiare il proprio ruolo da qui, per evitare un blocco accidentale. Ogni azione distruttiva o sensibile ha un popup di conferma esplicito; le rotte API dietro ai bottoni verificano il ruolo ADMIN in modo indipendente dalla pagina che le chiama
-- Registro animali (`/animali`): elenco, dettaglio, creazione e modifica dei dati di base (nome, specie, razza, data di nascita opzionale, descrizione, note, sesso, sterilizzato) aperti a chiunque loggato e approvato. Eliminazione riservata agli ADMIN, con conferma esplicita (avvisa anche se ci sono cartella clinica e/o storico affidi/adozioni collegati, persi insieme); cambio di stato (Disponibile / In affido / Adottato) riservato agli ADMIN, con selezione e salvataggio separati tramite bottone "Salva" (nessuna modifica accidentale al solo cambio di selezione). Passando a In affido/Adottato senza un rapporto già in corso, l'ADMIN deve compilare i dati della persona (nome, cognome, cellulare, documento); se un rapporto è già in corso (es. un affido che diventa adozione) i dati restano quelli già salvati, modificabili solo per correggerli. Tornando a Disponibile il rapporto in corso si chiude automaticamente. Età mostrata calcolata automaticamente dalla data di nascita quando nota (giorni sotto il mese, mesi sotto l'anno, anno/i più eventuali mesi sotto i 2 anni, solo anni da 2 anni in su), mai salvata come valore a parte
-- Ricerca nell'elenco animali: filtro testuale su nome/razza combinabile con stato e specie, tramite un semplice form che ricarica la pagina (nessun JavaScript necessario, funziona anche da un link condiviso/salvato). Messaggio distinto quando il rifugio non ha ancora animali registrati rispetto a quando i filtri applicati non trovano corrispondenze
-- Sesso (Maschio / Femmina / non noto) e stato di sterilizzazione (Sì / No / non specificato) dell'animale, entrambi opzionali, mostrati nel dettaglio con fallback esplicito quando non indicati
-- Foto dell'animale (opzionale): caricata tramite bottone "Carica foto" (o "Cambia foto" se già presente, al posto del selettore file grezzo), compressa e ridimensionata lato client (max 1200px, JPEG 80%) prima del salvataggio come data URL base64 nel database. Visibile solo nella pagina di dettaglio (in fondo, a piena larghezza su mobile), mai nell'elenco per non appesantirlo. Solo immagini, con limite di dimensione verificato anche lato server
-- Cartella clinica per ogni animale (sezione dedicata nel dettaglio): eventi di tipo vaccino, antiparassitario, visita veterinaria o terapia, ciascuno con data (orario incluso, utile in particolare per le visite) e un'eventuale scadenza per il prossimo richiamo; per le terapie continuative, un periodo con data di fine facoltativa ("in corso" se non impostata). Creazione, modifica ed eliminazione aperte a chiunque loggato e approvato (nessuna restrizione di ruolo, a differenza dei dati anagrafici dell'animale), sempre con un popup di conferma esplicito prima di scrivere, con testo specifico per tipo di evento e per data futura o passata
-- Storico delle modifiche di un evento clinico: ogni volta che un evento viene corretto tramite "Modifica", il valore precedente resta consultabile (link "Storico modifiche" nella cartella clinica, solo se l'evento è già stato modificato almeno una volta). Il semplice tocco di "Segna come confermato"/"Annulla conferma" non genera storico, essendo un'azione reversibile e frequente, non una correzione del contenuto
-- Scadenze evidenziate con un colore (arancione entro 14 giorni, rosso e in grassetto se già passate — il grassetto non fa affidamento solo sul colore, più facile da distinguere per chi ha difficoltà a percepire le tonalità): sia nel dettaglio del singolo animale sia in una vista aggregata su tutto il rifugio (`/animali/scadenze`, link "Scadenze" in header), divisa in "Scadenze imminenti" (entro 14 giorni o già passate) e "Scadenze future" (oltre i 14 giorni, mostrate senza colore di allerta)
-- Gli appuntamenti non ricorrenti, mensili o annuali restano segnalati come promemoria finché non vengono confermati come avvenuti: bottone dedicato "Segna come confermato" / "Annulla conferma" nel dettaglio dell'animale, senza popup (azione reversibile)
-- Richiami periodici (mensile o annuale, es. antiparassitario o vaccino): confermando che il richiamo è avvenuto, l'app genera da sola il prossimo evento della stessa serie (stesso tipo/prodotto, data spostata di un mese/anno), con una nota che ne spiega l'origine automatica — non serve reinserirlo a mano ogni volta
-- Dashboard (`/dashboard`): sezione "Farmaci di oggi" con l'elenco delle terapie continuative attive nella giornata corrente, su tutti gli animali del rifugio
-- Storico affidi/adozioni per ogni animale (sezione dedicata nel dettaglio): tipo di rapporto, persona coinvolta e periodo (in corso o concluso), più recenti prima. Cellulare e documento della persona sono dati sensibili, visibili solo all'ADMIN — una VOLONTARIA vede solo tipo/nome/periodo/note
-- Scheda clinica stampabile/scaricabile (link "Scarica scheda clinica" nel dettaglio animale): dati anagrafici di base e cartella clinica in una pagina pensata per essere stampata o salvata come PDF dal browser, utile prima di eliminare un animale o per consegnarla a un veterinario/nuovo affidatario. Non include lo storico affidi/adozioni (dati sensibili di persone terze) né i controlli interattivi della cartella clinica; resta sempre chiara (sfondo bianco) a prescindere dal tema scelto nel browser
-- App installabile su cellulare ("Aggiungi a schermata Home") e computer (Chrome/Edge, finestra a sé senza barra indirizzi): icona dedicata (due zampette bianche su sfondo teal), si apre direttamente sulla dashboard. Nessun funzionamento offline: serve solo connessione come oggi, cambia solo il modo in cui si apre l'app. Bottone "Installa l'app" in dashboard (niente da cercare nei menu del browser): su Chrome/Edge avvia subito l'installazione, su iPhone/iPad mostra le istruzioni (Safari non permette di avviarla da codice); sparisce da solo una volta installata
+Le volontarie di un rifugio seguono ogni cane su fogli sparsi o messaggi
+WhatsApp: vaccini, antiparassitari, richiami, chi è in affido a chi. Frida
+raccoglie tutto in un unico posto, con un'interfaccia semplice, caratteri e
+bottoni grandi, e conferme esplicite prima di ogni azione che non si può
+annullare.
+
+## Funzionalità principali
+
+### Accesso e ruoli
+Due ruoli: **volontaria/o** (uso quotidiano) e **admin** (gestione utenti e
+stati di adozione). I nuovi account nascono in attesa: un admin li approva
+prima che possano operare. Sessione via Auth.js (JWT), verificata ad ogni
+richiesta contro lo stato reale nel database — non solo contro il token, così
+una disapprovazione o un cambio ruolo hanno effetto immediato.
+
+### Registro animali e cartella clinica
+Anagrafica (nome, specie, razza, età calcolata dalla data di nascita, sesso,
+sterilizzazione, foto) e cartella clinica per ogni animale: vaccini,
+antiparassitari, visite, terapie continuative. Ogni evento ha uno storico
+delle modifiche, e una scheda clinica stampabile/scaricabile da consegnare a
+un veterinario o a un nuovo affidatario.
+
+### Scadenze e richiami automatici
+Vista aggregata su tutto il rifugio, evidenziata per urgenza (colore *e*
+grassetto, non solo colore, per chi ha difficoltà a distinguere le tonalità).
+I richiami periodici (es. antiparassitario mensile) si rigenerano da soli alla
+conferma — non serve reinserirli a mano ogni volta.
+
+### Adozioni e affidi
+Ciclo a stati (disponibile → in affido/adottato → di nuovo disponibile) con
+storico completo per animale. Dati sensibili della persona (cellulare,
+documento) visibili solo agli admin.
+
+### Amministrazione
+Approvazione nuovi account, cambio ruolo, reimpostazione password (senza
+self-service, per un pubblico a cui la gestione password crea spesso
+confusione), note interne per admin. Guardie anti-lockout: nessuno può
+eliminare o declassare se stesso.
+
+### Installabile
+Icona dedicata su cellulare ("Aggiungi a schermata Home") e computer
+(Chrome/Edge, finestra a sé), con bottone di installazione in dashboard.
+Nessun funzionamento offline: cambia solo il modo in cui l'app si apre.
+
+## Stack tecnico
+
+- **Next.js 16** (App Router) + **React 19** (React Compiler) + **TypeScript**
+- **Tailwind CSS v4**
+- **PostgreSQL** via **Prisma 7**
+- **Auth.js v4** (Credentials + sessione JWT)
+- **react-hook-form** + **zod** (stessa validazione client e server)
+- Icone e favicon generati via codice (`next/og`), nessun file immagine da mantenere
+
+## Eseguirlo in locale
+
+```bash
+npm install
+npx prisma generate
+npx prisma migrate dev
+npm run dev
+```
+
+Serve un PostgreSQL raggiungibile da `DATABASE_URL` (`.env`, non versionato).
+
+## Nota sul deploy
+
+Il progetto non è pubblicato online: il database è locale (`localhost`), non
+raggiungibile da un hosting come Vercel. Per pubblicarlo servirebbe un
+Postgres in cloud (es. Neon, Supabase, Railway) e aggiornare `DATABASE_URL` —
+tecnicamente possibile, semplicemente non ancora fatto.
 
 ## Modello dati
 
