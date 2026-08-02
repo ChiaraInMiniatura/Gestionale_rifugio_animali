@@ -7,16 +7,13 @@ Registro animali, cartella clinica, scadenzario dei richiami e ciclo
 adozioni in un unico posto — caratteri grandi, un tocco per ogni azione,
 pensato prima di tutto per lo smartphone.
 
-<table>
-<tr>
-<td width="62%" valign="top">
-<img src="docs/screenshots/desktop-login.png" alt="Frida su computer">
-</td>
-<td width="38%" valign="top">
-<img src="docs/screenshots/mobile-login.png" alt="Frida su cellulare">
-</td>
-</tr>
-</table>
+**Versione desktop:**
+
+<img src="docs/screenshots/desktop-login.png" alt="Frida su computer" width="700">
+
+**Versione mobile:**
+
+<img src="docs/screenshots/mobile-login.png" alt="Frida su cellulare" width="320">
 
 ## Per chi è pensato
 
@@ -46,47 +43,43 @@ volontariato riesca a usarla senza chiedere aiuto.
 
 ## Screenshot
 
-<table>
-<tr>
-<td width="66%" valign="top">
-<img src="docs/screenshots/desktop-dashboard.png" alt="Dashboard su computer">
-<p align="center"><sub>Dashboard — farmaci da somministrare oggi, su tutti gli animali del rifugio</sub></p>
-</td>
-<td width="34%" valign="top">
-<img src="docs/screenshots/mobile-menu.png" alt="Menu su cellulare">
-<p align="center"><sub>Menu a un tocco, pensato per il pollice</sub></p>
-</td>
-</tr>
-</table>
+### Dashboard
 
-<table>
-<tr>
-<td width="50%" valign="top">
-<img src="docs/screenshots/desktop-animali.png" alt="Registro animali su computer">
-<p align="center"><sub>Registro animali — ricerca per nome/razza, stato, specie</sub></p>
-</td>
-<td width="50%" valign="top">
-<img src="docs/screenshots/mobile-animali.png" alt="Registro animali su cellulare">
-<p align="center"><sub>Stessa vista, a piena larghezza sul telefono</sub></p>
-</td>
-</tr>
-</table>
+Versione desktop — farmaci da somministrare oggi, su tutti gli animali del rifugio:
 
-<table>
-<tr>
-<td width="42%" valign="top">
-<img src="docs/screenshots/mobile-dettaglio.png" alt="Dettaglio animale su cellulare">
-<p align="center"><sub>Dettaglio animale — anagrafica, cartella clinica, foto</sub></p>
-</td>
-<td width="58%" valign="top">
-<img src="docs/screenshots/desktop-scadenze.png" alt="Scadenze su computer">
-<p align="center"><sub>Scadenze — vista aggregata, imminenti in rosso/ambra</sub></p>
-</td>
-</tr>
-</table>
+<img src="docs/screenshots/desktop-dashboard.png" alt="Dashboard su computer" width="700">
 
-<img src="docs/screenshots/desktop-admin.png" alt="Pannello di amministrazione">
-<p align="center"><sub>Amministrazione — approvazioni, ruoli, password, senza self-service per chi amministra</sub></p>
+Versione mobile — menu a un tocco, pensato per il pollice:
+
+<img src="docs/screenshots/mobile-menu.png" alt="Menu su cellulare" width="320">
+
+### Registro animali
+
+Versione desktop — ricerca per nome/razza, stato, specie:
+
+<img src="docs/screenshots/desktop-animali.png" alt="Registro animali su computer" width="700">
+
+Versione mobile — stessa vista, a piena larghezza sul telefono:
+
+<img src="docs/screenshots/mobile-animali.png" alt="Registro animali su cellulare" width="320">
+
+### Dettaglio animale
+
+Versione mobile — anagrafica, cartella clinica, foto:
+
+<img src="docs/screenshots/mobile-dettaglio.png" alt="Dettaglio animale su cellulare" width="320">
+
+### Scadenze
+
+Versione desktop — vista aggregata, imminenti in rosso/ambra:
+
+<img src="docs/screenshots/desktop-scadenze.png" alt="Scadenze su computer" width="700">
+
+### Amministrazione
+
+Versione desktop — approvazioni, ruoli, password, senza self-service per chi amministra:
+
+<img src="docs/screenshots/desktop-admin.png" alt="Pannello di amministrazione" width="700">
 
 ## Funzionalità principali
 
