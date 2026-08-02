@@ -137,6 +137,14 @@ export async function PATCH(
     where: { id: eventoId },
     data: normalizzaEventoClinico(parsed.data),
   });
+
+  // Copre il caso in cui questa modifica renda l'evento MENSILE/ANNUALE
+  // e già confermato (es. cambiando qui la frequenza su un evento creato
+  // in precedenza): generaProssimoEventoSeServe ha già tutte le guardie
+  // necessarie (ricorrenza, confermato, prossimoGenerato), quindi è
+  // sicuro chiamarla anche qui, non solo dal ramo "confermato" sopra —
+  // altrimenti un evento del genere resterebbe senza successore.
+  await generaProssimoEventoSeServe(evento);
   return NextResponse.json(evento);
 }
 
