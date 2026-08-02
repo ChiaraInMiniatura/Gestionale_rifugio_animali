@@ -8,7 +8,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { terapiaAttivaOggi } from "@/lib/scadenza";
-import { InstallaAppButton } from "@/components/installa-app-button";
 
 export default async function DashboardPage() {
   // Il proxy ha già verificato sessione/approvazione a monte; qui si
@@ -27,39 +26,37 @@ export default async function DashboardPage() {
   const farmaciOggi = terapieGiornaliere.filter((evento) => terapiaAttivaOggi(evento));
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-8 bg-teal-100 px-4 py-10 dark:bg-[#04120f]">
+    <div className="flex flex-1 flex-col items-center gap-8 bg-page px-4 py-10">
       <div className="text-center">
-        <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+        <h1 className="text-xl font-semibold text-ink">
           Benvenuta/o, <span className="capitalize">{session?.user.name}</span>
         </h1>
-        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-          Ruolo: {session?.user.role}
+        <p className="mt-2 inline-block rounded-full bg-positive-soft px-3 py-1 text-sm font-medium text-positive">
+          {session?.user.role}
         </p>
       </div>
 
-      <InstallaAppButton />
-
       <div className="w-full max-w-lg">
-        <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+        <h2 className="mb-3 text-lg font-semibold text-ink">
           Farmaci di oggi
         </h2>
 
         {farmaciOggi.length === 0 ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-ink-soft">
             Nessuna terapia giornaliera attiva oggi.
           </p>
         ) : (
-          <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950">
+          <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
             {farmaciOggi.map((evento) => (
               <li key={evento.id}>
                 <Link
                   href={`/animali/${evento.animale.id}`}
-                  className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+                  className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-page active:bg-accent-soft"
                 >
-                  <span className="font-medium capitalize text-zinc-900 dark:text-zinc-50">
+                  <span className="font-medium capitalize text-ink">
                     {evento.animale.nome}
                   </span>
-                  <span className="text-sm capitalize text-zinc-600 dark:text-zinc-400">
+                  <span className="text-sm capitalize text-ink-soft">
                     {evento.nomeSpecifico}
                   </span>
                 </Link>

@@ -117,7 +117,7 @@ export function StatoControl({
           value={stato}
           disabled={salvataggio}
           onChange={(e) => setStato(e.target.value as StatoAnimale)}
-          className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="rounded-xl border border-line bg-page px-3 py-2 text-sm text-ink"
         >
           {STATI.map((s) => (
             <option key={s} value={s}>
@@ -132,15 +132,15 @@ export function StatoControl({
           // dati della persona sono cambiati): evita chiamate API inutili
           // e comunica visivamente che non ci sono modifiche pendenti.
           disabled={salvataggio || !cisonoModifiche}
-          className="rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white transition hover:scale-105 hover:bg-teal-600 active:scale-95 active:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
+          className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition hover:scale-105 hover:bg-accent-hover active:scale-95 active:bg-accent-active disabled:cursor-not-allowed disabled:opacity-50"
         >
           {salvataggio ? "Salvataggio..." : "Salva"}
         </button>
       </div>
 
       {richiedeDatiPersona && (
-        <div className="mt-3 space-y-2 rounded-md border border-zinc-200 p-3 dark:border-zinc-800">
-          <p className="text-xs text-zinc-700 dark:text-zinc-300">
+        <div className="mt-3 space-y-2 rounded-xl border border-line p-3">
+          <p className="text-xs text-ink-soft">
             {adozioneAperta
               ? "Dati della persona (già salvati, correggi solo se serve)"
               : "Dati della persona (obbligatori per affidare/adottare)"}
@@ -151,7 +151,7 @@ export function StatoControl({
             value={nome}
             onChange={(e) => setNome(e.target.value)}
             required={datiObbligatori}
-            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="w-full rounded-xl border border-line bg-page px-3 py-2 text-sm text-ink"
           />
           <input
             type="text"
@@ -159,7 +159,7 @@ export function StatoControl({
             value={cognome}
             onChange={(e) => setCognome(e.target.value)}
             required={datiObbligatori}
-            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="w-full rounded-xl border border-line bg-page px-3 py-2 text-sm text-ink"
           />
           <input
             type="text"
@@ -167,7 +167,7 @@ export function StatoControl({
             value={cellulare}
             onChange={(e) => setCellulare(e.target.value)}
             required={datiObbligatori}
-            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="w-full rounded-xl border border-line bg-page px-3 py-2 text-sm text-ink"
           />
           <input
             type="text"
@@ -175,19 +175,19 @@ export function StatoControl({
             value={documento}
             onChange={(e) => setDocumento(e.target.value)}
             required={datiObbligatori}
-            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="w-full rounded-xl border border-line bg-page px-3 py-2 text-sm text-ink"
           />
           <textarea
             placeholder="Note (facoltative)"
             rows={2}
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="w-full rounded-xl border border-line bg-page px-3 py-2 text-sm text-ink"
           />
         </div>
       )}
 
-      {errore && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{errore}</p>}
+      {errore && <p className="mt-2 text-sm text-danger">{errore}</p>}
     </div>
   );
 }

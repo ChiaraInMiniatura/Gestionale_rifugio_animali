@@ -19,6 +19,7 @@ export const animaleSchema = z.object({
   nome: z.string().trim().min(1, "Il nome è obbligatorio"),
   specie: z.enum(specieValues),
   razza: z.string().trim().optional(),
+  microchip: z.string().trim().optional(),
   dataNascita: z
     .string()
     .optional()
@@ -47,6 +48,7 @@ export function normalizzaAnimale(input: AnimaleInput) {
     nome: input.nome,
     specie: input.specie,
     razza: input.razza && input.razza.length > 0 ? input.razza : null,
+    microchip: input.microchip && input.microchip.length > 0 ? input.microchip : null,
     dataNascita: input.dataNascita ? new Date(input.dataNascita) : null,
     descrizione: input.descrizione && input.descrizione.length > 0 ? input.descrizione : null,
     note: input.note && input.note.length > 0 ? input.note : null,

@@ -73,11 +73,11 @@ export function EliminaEventoButton({
         type="button"
         disabled={eliminando}
         onClick={handleElimina}
-        className="rounded-full border border-red-300 px-3 py-1.5 text-sm font-medium text-red-700 transition hover:scale-105 hover:bg-red-50 active:scale-95 active:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950 dark:active:bg-red-900"
+        className="rounded-full border border-danger/40 px-3 py-1.5 text-sm font-medium text-danger transition hover:scale-105 hover:bg-danger-soft active:scale-95 active:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-50"
       >
         Elimina
       </button>
-      {errore && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errore}</p>}
+      {errore && <p className="mt-1 text-xs text-danger">{errore}</p>}
     </div>
   );
 }

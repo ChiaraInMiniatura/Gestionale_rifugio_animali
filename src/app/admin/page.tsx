@@ -15,8 +15,8 @@ export default async function AdminPage() {
 
   if (session?.user.role !== "ADMIN") {
     return (
-      <div className="flex flex-1 items-center justify-center bg-teal-100 px-4 dark:bg-[#04120f]">
-        <p className="text-zinc-700 dark:text-zinc-300">Accesso non consentito.</p>
+      <div className="flex flex-1 items-center justify-center bg-page px-4">
+        <p className="text-ink-soft">Accesso non consentito.</p>
       </div>
     );
   }
@@ -47,8 +47,8 @@ export default async function AdminPage() {
   }));
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-6 bg-teal-100 px-4 py-10 dark:bg-[#04120f]">
-      <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+    <div className="flex flex-1 flex-col items-center gap-6 bg-page px-4 py-10">
+      <h1 className="text-xl font-semibold text-ink">
         Amministrazione utenti
       </h1>
 

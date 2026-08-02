@@ -9,3 +9,12 @@ export const STATO_LABEL: Record<StatoAnimale, string> = {
   IN_AFFIDO: "In affido",
   ADOTTATO: "Adottato",
 };
+
+// Classi del badge a pillola per stato (MOD13): verde per gli stati "fermi"
+// (disponibile o adottato), ambra per l'affido perché è una situazione
+// transitoria in attesa di un esito definitivo.
+export const STATO_BADGE_CLASS: Record<StatoAnimale, string> = {
+  DISPONIBILE: "bg-positive-soft text-positive",
+  IN_AFFIDO: "bg-warn-soft text-warn",
+  ADOTTATO: "bg-positive-soft text-positive",
+};

@@ -50,8 +50,8 @@ export default function RegistrazionePage() {
 
   if (inviata) {
     return (
-      <div className="flex flex-1 items-center justify-center bg-teal-100 px-4 dark:bg-[#04120f]">
-        <p className="max-w-md text-center text-lg text-zinc-800 dark:text-zinc-200">
+      <div className="flex flex-1 items-center justify-center bg-page px-4">
+        <p className="max-w-md text-center text-lg text-ink">
           Registrazione inviata. Il tuo account è in attesa di approvazione.
         </p>
       </div>
@@ -59,69 +59,69 @@ export default function RegistrazionePage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-teal-100 px-4 dark:bg-[#04120f]">
+    <div className="flex flex-1 items-center justify-center bg-page px-4">
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        className="w-full max-w-sm rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950"
+        className="w-full max-w-sm rounded-2xl border border-line bg-surface p-6 shadow-sm"
       >
-        <h1 className="mb-6 text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+        <h1 className="mb-6 text-xl font-semibold text-ink">
           Registrazione volontaria/o
         </h1>
 
         <div className="mb-4">
-          <label htmlFor="name" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="name" className="mb-1 block text-sm font-medium text-ink-soft">
             Nome
           </label>
           <input
             id="name"
             type="text"
             {...register("name")}
-            className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
           />
           {errors.name && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name.message}</p>
+            <p className="mt-1 text-sm text-danger">{errors.name.message}</p>
           )}
         </div>
 
         <div className="mb-4">
-          <label htmlFor="email" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="email" className="mb-1 block text-sm font-medium text-ink-soft">
             Email
           </label>
           <input
             id="email"
             type="email"
             {...register("email")}
-            className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
           />
           {errors.email && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
+            <p className="mt-1 text-sm text-danger">{errors.email.message}</p>
           )}
         </div>
 
         <div className="mb-6">
-          <label htmlFor="password" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="password" className="mb-1 block text-sm font-medium text-ink-soft">
             Password
           </label>
           <input
             id="password"
             type="password"
             {...register("password")}
-            className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
           />
           {errors.password && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>
+            <p className="mt-1 text-sm text-danger">{errors.password.message}</p>
           )}
         </div>
 
         {erroreServer && (
-          <p className="mb-4 text-sm text-red-600 dark:text-red-400">{erroreServer}</p>
+          <p className="mb-4 text-sm text-danger">{erroreServer}</p>
         )}
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-full bg-teal-700 px-5 py-2.5 font-medium text-white transition hover:scale-[1.02] hover:bg-teal-600 active:scale-95 active:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
+          className="w-full rounded-full bg-accent px-5 py-2.5 font-medium text-white transition hover:scale-[1.02] hover:bg-accent-hover active:scale-95 active:bg-accent-active disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSubmitting ? "Invio in corso..." : "Registrati"}
         </button>

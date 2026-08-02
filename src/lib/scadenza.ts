@@ -143,9 +143,9 @@ export function calcolaStatoEvento(
  * @returns classi Tailwind (light + dark) da applicare al testo.
  */
 export function coloreScadenza(stato: StatoScadenza): string {
-  if (stato === "scaduto") return "font-bold text-red-600 dark:text-red-400";
-  if (stato === "in_scadenza") return "text-orange-600 dark:text-orange-400";
-  return "text-zinc-700 dark:text-zinc-300";
+  if (stato === "scaduto") return "font-bold text-danger";
+  if (stato === "in_scadenza") return "text-warn";
+  return "text-ink-soft";
 }
 
 /** Sottoinsieme di campi di EventoClinico richiesto da terapiaAttivaOggi:

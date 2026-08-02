@@ -16,7 +16,7 @@ import { animaleSchema, normalizzaAnimale, statoAnimaleSchema } from "@/lib/vali
 // Elenco dei campi "dati di base": usato per rilevare se una richiesta
 // PATCH sta toccando altro oltre allo stato, e quindi va rifiutata se
 // insieme è presente anche "stato" (vedi haCampoStato/haAltriCampi sotto).
-const CAMPI_BASE = ["nome", "specie", "razza", "dataNascita", "descrizione", "note", "sesso", "sterilizzato"];
+const CAMPI_BASE = ["nome", "specie", "razza", "microchip", "dataNascita", "descrizione", "note", "sesso", "sterilizzato"];
 
 /**
  * Restituisce il dettaglio completo di un animale (foto inclusa).

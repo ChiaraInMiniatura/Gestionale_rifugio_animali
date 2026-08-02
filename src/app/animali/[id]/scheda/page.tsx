@@ -69,6 +69,10 @@ export default async function SchedaClinicaPage({
             <dd>{animale.razza ?? "Non nota"}</dd>
           </div>
           <div>
+            <dt className="font-medium text-zinc-900">N° microchip</dt>
+            <dd>{animale.microchip ?? "Non registrato"}</dd>
+          </div>
+          <div>
             <dt className="font-medium text-zinc-900">Sesso</dt>
             <dd>
               {animale.sesso === "MASCHIO"

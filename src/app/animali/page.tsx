@@ -8,7 +8,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { calcolaEta } from "@/lib/eta";
-import { STATO_LABEL } from "@/lib/stato-animale";
+import { STATO_LABEL, STATO_BADGE_CLASS } from "@/lib/stato-animale";
 import { parseRicercaAnimali } from "@/lib/validations/ricerca-animali";
 
 // Nessuna API dinamica di Next viene chiamata qui (a differenza di
@@ -55,14 +55,14 @@ export default async function AnimaliPage({
   });
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-6 bg-teal-100 px-4 py-10 dark:bg-[#04120f]">
+    <div className="flex flex-1 flex-col items-center gap-6 bg-page px-4 py-10">
       <div className="flex w-full max-w-3xl items-center justify-between">
-        <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+        <h1 className="text-xl font-semibold text-ink">
           Animali
         </h1>
         <Link
           href="/animali/nuovo"
-          className="inline-block rounded-full bg-teal-700 px-4 py-1.5 text-sm font-medium text-white transition hover:scale-105 hover:bg-teal-600 active:scale-95 active:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
+          className="inline-block rounded-full bg-accent px-4 py-1.5 text-sm font-medium text-white transition hover:scale-105 hover:bg-accent-hover active:scale-95 active:bg-accent-active"
         >
           Nuovo animale
         </Link>
@@ -74,12 +74,12 @@ export default async function AnimaliPage({
       <form
         method="GET"
         action="/animali"
-        className="flex w-full max-w-3xl flex-wrap items-end gap-3 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
+        className="flex w-full max-w-3xl flex-wrap items-end gap-3 rounded-2xl border border-line bg-surface p-4 shadow-sm"
       >
         <div className="min-w-[180px] flex-1">
           <label
             htmlFor="q"
-            className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            className="mb-1 block text-sm font-medium text-ink-soft"
           >
             Cerca per nome o razza
           </label>
@@ -88,14 +88,14 @@ export default async function AnimaliPage({
             type="text"
             name="q"
             defaultValue={filtri.q ?? ""}
-            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
           />
         </div>
 
         <div>
           <label
             htmlFor="stato"
-            className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            className="mb-1 block text-sm font-medium text-ink-soft"
           >
             Stato
           </label>
@@ -103,7 +103,7 @@ export default async function AnimaliPage({
             id="stato"
             name="stato"
             defaultValue={filtri.stato ?? ""}
-            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="rounded-xl border border-line bg-page px-3 py-2 text-ink"
           >
             <option value="">Tutti gli stati</option>
             <option value="DISPONIBILE">{STATO_LABEL.DISPONIBILE}</option>
@@ -115,7 +115,7 @@ export default async function AnimaliPage({
         <div>
           <label
             htmlFor="specie"
-            className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            className="mb-1 block text-sm font-medium text-ink-soft"
           >
             Specie
           </label>
@@ -123,7 +123,7 @@ export default async function AnimaliPage({
             id="specie"
             name="specie"
             defaultValue={filtri.specie ?? ""}
-            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="rounded-xl border border-line bg-page px-3 py-2 text-ink"
           >
             <option value="">Tutte le specie</option>
             <option value="CANE">Cane</option>
@@ -134,7 +134,7 @@ export default async function AnimaliPage({
 
         <button
           type="submit"
-          className="rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white transition hover:scale-105 hover:bg-teal-600 active:scale-95 active:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
+          className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition hover:scale-105 hover:bg-accent-hover active:scale-95 active:bg-accent-active"
         >
           Cerca
         </button>
@@ -142,7 +142,7 @@ export default async function AnimaliPage({
         {filtriAttivi && (
           <Link
             href="/animali"
-            className="inline-block text-sm font-medium text-zinc-700 underline transition hover:scale-105 active:scale-95 dark:text-zinc-300"
+            className="inline-block text-sm font-medium text-ink-soft underline transition hover:scale-105 active:scale-95"
           >
             Azzera filtri
           </Link>
@@ -150,29 +150,29 @@ export default async function AnimaliPage({
       </form>
 
       {animali.length === 0 ? (
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="text-sm text-ink-soft">
           {filtriAttivi
             ? "Nessun animale corrisponde ai filtri di ricerca."
             : "Nessun animale registrato."}
         </p>
       ) : (
-        <ul className="w-full max-w-3xl divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950">
+        <ul className="w-full max-w-3xl divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
           {animali.map((animale) => (
             <li key={animale.id}>
               <Link
                 href={`/animali/${animale.id}`}
-                className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+                className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-page active:bg-accent-soft"
               >
                 <div>
-                  <p className="font-medium capitalize text-zinc-900 dark:text-zinc-50">
+                  <p className="font-medium capitalize text-ink">
                     {animale.nome}
                   </p>
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                  <p className="text-sm text-ink-soft">
                     {animale.razza ?? "Razza non nota"} ·{" "}
                     {calcolaEta(animale.dataNascita) ?? "età non nota"}
                   </p>
                 </div>
-                <span className="text-sm text-zinc-700 dark:text-zinc-300">
+                <span className={`rounded-full px-3 py-1 text-sm font-medium ${STATO_BADGE_CLASS[animale.stato]}`}>
                   {STATO_LABEL[animale.stato]}
                 </span>
               </Link>

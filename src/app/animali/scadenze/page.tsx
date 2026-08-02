@@ -61,32 +61,32 @@ export default async function ScadenzePage() {
     .sort((a, b) => a.data.getTime() - b.data.getTime());
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-6 bg-teal-100 px-4 py-10 dark:bg-[#04120f]">
+    <div className="flex flex-1 flex-col items-center gap-6 bg-page px-4 py-10">
       <div className="w-full max-w-2xl">
-        <h1 className="mb-6 text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+        <h1 className="mb-6 text-xl font-semibold text-ink">
           Scadenze
         </h1>
 
-        <h2 className="mb-3 text-sm font-medium text-zinc-900 dark:text-zinc-50">
+        <h2 className="mb-3 text-sm font-medium text-ink">
           Scadenze imminenti
         </h2>
         {scadenzeImminenti.length === 0 ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-ink-soft">
             Nessuna scadenza imminente o passata.
           </p>
         ) : (
-          <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950">
+          <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
             {scadenzeImminenti.map(({ evento, data, stato }) => (
               <li key={evento.id}>
                 <Link
                   href={`/animali/${evento.animale.id}`}
-                  className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+                  className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-page active:bg-accent-soft"
                 >
                   <div>
-                    <p className="font-medium text-zinc-900 dark:text-zinc-50">
+                    <p className="font-medium text-ink">
                       <span className="capitalize">{evento.animale.nome}</span> — {TIPO_EVENTO_LABEL[evento.tipo]}
                     </p>
-                    <p className="text-sm capitalize text-zinc-600 dark:text-zinc-400">
+                    <p className="text-sm capitalize text-ink-soft">
                       {evento.nomeSpecifico}
                     </p>
                   </div>
@@ -102,21 +102,21 @@ export default async function ScadenzePage() {
         {/* Omessa del tutto se vuota (nessun titolo con "nessuna voce" sotto). */}
         {scadenzeFuture.length > 0 && (
           <>
-            <h2 className="mb-3 mt-8 text-sm font-medium text-zinc-900 dark:text-zinc-50">
+            <h2 className="mb-3 mt-8 text-sm font-medium text-ink">
               Scadenze future
             </h2>
-            <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950">
+            <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
               {scadenzeFuture.map(({ evento, data, stato }) => (
                 <li key={evento.id}>
                   <Link
                     href={`/animali/${evento.animale.id}`}
-                    className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+                    className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-page active:bg-accent-soft"
                   >
                     <div>
-                      <p className="font-medium text-zinc-900 dark:text-zinc-50">
+                      <p className="font-medium text-ink">
                         <span className="capitalize">{evento.animale.nome}</span> — {TIPO_EVENTO_LABEL[evento.tipo]}
                       </p>
-                      <p className="text-sm capitalize text-zinc-600 dark:text-zinc-400">
+                      <p className="text-sm capitalize text-ink-soft">
                         {evento.nomeSpecifico}
                       </p>
                     </div>

@@ -95,6 +95,10 @@ model Animale {
   /// solo cani, pur lasciando aperta l'estensione ad altre specie.
   specie       Specie       @default(CANE)
   razza        String?
+  /// Numero del microchip identificativo, se noto: testo libero (non
+  /// validato in un formato specifico, i lettori/produttori variano),
+  /// facoltativo come "razza".
+  microchip    String?
   /// Opzionale e indicativa se non nota con precisione: da qui si
   /// calcola l'età (src/lib/eta.ts), mai salvata come valore a parte
   /// per evitare che diventi disallineata nel tempo.

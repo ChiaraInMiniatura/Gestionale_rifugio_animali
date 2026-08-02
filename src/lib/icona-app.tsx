@@ -1,11 +1,13 @@
-// Genera l'icona dell'app (due zampe bianche su sfondo teal) in qualunque
+// Genera l'icona dell'app (due zampe bianche su sfondo ambra) in qualunque
 // dimensione richiesta. Un'unica fonte per la forma — validata a schermo
 // con l'utente prima di scriverla qui — riusata da favicon, icona Apple e
-// icone del manifest, invece di ridisegnarla in ciascun file.
+// icone del manifest, invece di ridisegnarla in ciascun file. Colore
+// allineato al token --accent di globals.css (MOD13): mai importabile qui
+// perché questo file gira lato server con next/og, fuori da Tailwind.
 
 import { ImageResponse } from "next/og";
 
-const TEAL = "#0f766e";
+const ACCENT = "#d97b29";
 
 // Un cuscinetto + 4 ditini, senza rotazione sui singoli ditini: forma
 // semplice e leggibile anche alle dimensioni più piccole (32px).
@@ -40,7 +42,7 @@ export function generaIconaApp(dimensione: number) {
           width: "100%",
           height: "100%",
           display: "flex",
-          background: TEAL,
+          background: ACCENT,
         }}
       >
         <svg viewBox="0 0 100 100" width={dimensione} height={dimensione}>

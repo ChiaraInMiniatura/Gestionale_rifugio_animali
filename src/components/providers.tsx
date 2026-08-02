@@ -1,6 +1,6 @@
 // Wrapper dei provider React globali montati nel root layout: per ora
 // solo SessionProvider di Auth.js, che rende useSession() disponibile a
-// qualunque client component sotto (NavLinks, LogoutButton, ecc.).
+// qualunque client component sotto (NavLinks, ecc.).
 
 "use client";
 

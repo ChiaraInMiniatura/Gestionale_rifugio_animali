@@ -62,13 +62,13 @@ export function ConfermaEventoButton({
           confermato
             ? // Azione secondaria/discreta: non deve confondersi con
               // un'azione distruttiva come l'eliminazione (niente rosso).
-              "rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-600 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
-            : "rounded-full border border-emerald-300 px-3 py-1.5 text-sm font-medium text-emerald-700 transition hover:scale-105 hover:bg-emerald-50 active:scale-95 active:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-emerald-800 dark:text-emerald-400 dark:hover:bg-emerald-950 dark:active:bg-emerald-900"
+              "rounded-full border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:scale-105 hover:bg-page active:scale-95 active:bg-accent-soft disabled:cursor-not-allowed disabled:opacity-50"
+            : "rounded-full border border-positive/40 px-3 py-1.5 text-sm font-medium text-positive transition hover:scale-105 hover:bg-positive-soft active:scale-95 active:bg-positive-soft disabled:cursor-not-allowed disabled:opacity-50"
         }
       >
         {confermato ? "Annulla conferma" : "Segna come confermato"}
       </button>
-      {errore && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errore}</p>}
+      {errore && <p className="mt-1 text-xs text-danger">{errore}</p>}
     </div>
   );
 }

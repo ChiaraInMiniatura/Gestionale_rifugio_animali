@@ -8,21 +8,85 @@ html {
   font-size: 112.5%;
 }
 
+/* Token semantici del restyling (MOD13): definiti come variabili CSS
+   normali, chiaro qui e scuro sotto in @media, poi referenziati dentro
+   @theme inline. Così le utility (bg-accent, text-ink-soft, ecc.) cambiano
+   da sole col tema — non serve più scrivere dark:bg-X in ogni pagina. */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  --page: #f2ede4;
+  --surface: #fdfbf8;
+  --line: #e8e1d5;
+  --ink: #201c17;
+  --ink-soft: #6b6259;
+
+  --accent: #d97b29;
+  --accent-hover: #c2650f;
+  --accent-active: #a8570d;
+  --accent-soft: #fbe6d2;
+
+  --positive: #3f5d45;
+  --positive-soft: #e9efe8;
+
+  --warn: #b8730f;
+  --warn-soft: #fdf1de;
+
+  --danger: #c4342b;
+  --danger-soft: #fbe9e7;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-nunito);
+
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-active: var(--accent-active);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-positive: var(--positive);
+  --color-positive-soft: var(--positive-soft);
+
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+
+    --page: #15130f;
+    --surface: #211d17;
+    --line: #38322a;
+    --ink: #f1ece2;
+    --ink-soft: #a89e91;
+
+    --accent: #e59a4f;
+    --accent-hover: #eaa965;
+    --accent-active: #d98b3a;
+    --accent-soft: #3a2a18;
+
+    --positive: #7fae8b;
+    --positive-soft: #1c2a20;
+
+    --warn: #e0a34a;
+    --warn-soft: #2c2214;
+
+    --danger: #e2685f;
+    --danger-soft: #2e1917;
   }
 }
 

@@ -42,15 +42,15 @@ export function UtentiList({
   return (
     <div className="w-full max-w-2xl space-y-8">
       <section>
-        <h2 className="mb-3 text-sm font-medium text-zinc-900 dark:text-zinc-50">
+        <h2 className="mb-3 text-sm font-medium text-ink">
           In attesa di approvazione
         </h2>
         {inAttesa.length === 0 ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-ink-soft">
             Nessuna richiesta in attesa.
           </p>
         ) : (
-          <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950">
+          <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
             {inAttesa.map((u) => (
               <UtenteRow
                 key={u.id}
@@ -64,15 +64,15 @@ export function UtentiList({
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-medium text-zinc-900 dark:text-zinc-50">
+        <h2 className="mb-3 text-sm font-medium text-ink">
           Utenti confermati
         </h2>
         {confermati.length === 0 ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-ink-soft">
             Nessun utente confermato.
           </p>
         ) : (
-          <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950">
+          <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
             {confermati.map((u) => (
               <UtenteRow
                 key={u.id}
@@ -202,14 +202,14 @@ function UtenteRow({
     <li className="p-4">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="font-medium capitalize text-zinc-900 dark:text-zinc-50">
+          <p className="font-medium capitalize text-ink">
             {utente.name}{" "}
-            <span className="text-xs font-normal text-zinc-600 dark:text-zinc-400">
+            <span className="text-xs font-normal text-ink-soft">
               ({RUOLO_LABEL[utente.role]})
             </span>
           </p>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">{utente.email}</p>
-          <p className="text-xs text-zinc-700 dark:text-zinc-300">
+          <p className="text-sm text-ink-soft">{utente.email}</p>
+          <p className="text-xs text-ink-soft">
             Registrata/o il {format(new Date(utente.createdAt), "d MMMM yyyy", { locale: it })}
           </p>
         </div>
@@ -221,7 +221,7 @@ function UtenteRow({
                 type="button"
                 disabled={caricamento}
                 onClick={handleApprova}
-                className="rounded-full bg-teal-700 px-4 py-1.5 text-sm font-medium text-white transition hover:scale-105 hover:bg-teal-600 active:scale-95 active:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
+                className="rounded-full bg-accent px-4 py-1.5 text-sm font-medium text-white transition hover:scale-105 hover:bg-accent-hover active:scale-95 active:bg-accent-active disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Approva
               </button>
@@ -229,7 +229,7 @@ function UtenteRow({
                 type="button"
                 disabled={caricamento}
                 onClick={handleRifiuta}
-                className="rounded-full border border-red-300 px-4 py-1.5 text-sm font-medium text-red-700 transition hover:scale-105 hover:bg-red-50 active:scale-95 active:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950 dark:active:bg-red-900"
+                className="rounded-full border border-danger/40 px-4 py-1.5 text-sm font-medium text-danger transition hover:scale-105 hover:bg-danger-soft active:scale-95 active:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Rifiuta
               </button>
@@ -240,7 +240,7 @@ function UtenteRow({
                 type="button"
                 disabled={caricamento}
                 onClick={handleElimina}
-                className="rounded-full border border-red-300 px-4 py-1.5 text-sm font-medium text-red-700 transition hover:scale-105 hover:bg-red-50 active:scale-95 active:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950 dark:active:bg-red-900"
+                className="rounded-full border border-danger/40 px-4 py-1.5 text-sm font-medium text-danger transition hover:scale-105 hover:bg-danger-soft active:scale-95 active:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Elimina
               </button>
@@ -249,7 +249,7 @@ function UtenteRow({
         </div>
       </div>
 
-      {errore && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{errore}</p>}
+      {errore && <p className="mt-2 text-sm text-danger">{errore}</p>}
 
       <div className="mt-3 flex flex-wrap gap-2">
         {!isSe && (
@@ -257,7 +257,7 @@ function UtenteRow({
             type="button"
             disabled={caricamento}
             onClick={handleCambiaRuolo}
-            className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+            className="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:scale-105 hover:bg-page active:scale-95 active:bg-accent-soft disabled:cursor-not-allowed disabled:opacity-50"
           >
             {utente.role === "ADMIN" ? "Rendi volontaria/o" : "Rendi admin"}
           </button>
@@ -265,14 +265,14 @@ function UtenteRow({
         <button
           type="button"
           onClick={() => setNoteAperte((v) => !v)}
-          className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+          className="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:scale-105 hover:bg-page active:scale-95 active:bg-accent-soft"
         >
           {noteAperte ? "Chiudi note" : "Note"}
         </button>
         <button
           type="button"
           onClick={() => setPasswordAperta((v) => !v)}
-          className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+          className="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:scale-105 hover:bg-page active:scale-95 active:bg-accent-soft"
         >
           {passwordAperta ? "Annulla" : "Cambia password"}
         </button>
@@ -343,35 +343,35 @@ function NoteForm({
   }
 
   return (
-    <div className="mt-3 rounded-md border border-zinc-200 p-3 dark:border-zinc-800">
+    <div className="mt-3 rounded-xl border border-line p-3">
       <div className="mb-2">
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label className="mb-1 block text-sm font-medium text-ink-soft">
           Cellulare
         </label>
         <input
           type="text"
           value={cellulare}
           onChange={(e) => setCellulare(e.target.value)}
-          className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
         />
       </div>
       <div className="mb-3">
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label className="mb-1 block text-sm font-medium text-ink-soft">
           Note (es. disponibilità, difficoltà)
         </label>
         <textarea
           rows={3}
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
         />
       </div>
-      {errore && <p className="mb-2 text-sm text-red-600 dark:text-red-400">{errore}</p>}
+      {errore && <p className="mb-2 text-sm text-danger">{errore}</p>}
       <button
         type="button"
         disabled={salvataggio}
         onClick={handleSalva}
-        className="rounded-full bg-teal-700 px-4 py-1.5 text-sm font-medium text-white transition hover:scale-105 hover:bg-teal-600 active:scale-95 active:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
+        className="rounded-full bg-accent px-4 py-1.5 text-sm font-medium text-white transition hover:scale-105 hover:bg-accent-hover active:scale-95 active:bg-accent-active disabled:cursor-not-allowed disabled:opacity-50"
       >
         {salvataggio ? "Salvataggio..." : "Salva"}
       </button>
@@ -435,8 +435,8 @@ function CambiaPasswordForm({
   }
 
   return (
-    <div className="mt-3 rounded-md border border-zinc-200 p-3 dark:border-zinc-800">
-      <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+    <div className="mt-3 rounded-xl border border-line p-3">
+      <label className="mb-1 block text-sm font-medium text-ink-soft">
         Nuova password
       </label>
       <input
@@ -444,14 +444,14 @@ function CambiaPasswordForm({
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Almeno 8 caratteri"
-        className="mb-2 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+        className="mb-2 w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
       />
-      {errore && <p className="mb-2 text-sm text-red-600 dark:text-red-400">{errore}</p>}
+      {errore && <p className="mb-2 text-sm text-danger">{errore}</p>}
       <button
         type="button"
         disabled={salvataggio}
         onClick={handleSalva}
-        className="rounded-full bg-teal-700 px-4 py-1.5 text-sm font-medium text-white transition hover:scale-105 hover:bg-teal-600 active:scale-95 active:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
+        className="rounded-full bg-accent px-4 py-1.5 text-sm font-medium text-white transition hover:scale-105 hover:bg-accent-hover active:scale-95 active:bg-accent-active disabled:cursor-not-allowed disabled:opacity-50"
       >
         {salvataggio ? "Salvataggio..." : "Salva"}
       </button>

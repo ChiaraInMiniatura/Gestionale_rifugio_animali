@@ -60,27 +60,31 @@ export default async function AnimaleDettaglioPage({
   const adozioneAperta = animale.adozioni.find((a) => a.dataFine === null) ?? null;
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-6 bg-teal-100 px-4 py-10 dark:bg-[#04120f]">
-      <div className="w-full max-w-lg rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+    <div className="flex flex-1 flex-col items-center gap-6 bg-page px-4 py-10">
+      <div className="w-full max-w-lg rounded-2xl border border-line bg-surface p-6 shadow-sm">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold capitalize text-zinc-900 dark:text-zinc-50">
+          <h1 className="text-xl font-semibold capitalize text-ink">
             {animale.nome}
           </h1>
           <Link
             href={`/animali/${animale.id}/modifica`}
-            className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+            className="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:scale-105 hover:bg-page active:scale-95 active:bg-accent-soft"
           >
             Modifica dati
           </Link>
         </div>
 
-        <dl className="mt-4 space-y-3 text-sm text-zinc-700 dark:text-zinc-300">
+        <dl className="mt-4 space-y-3 text-sm text-ink-soft">
           <div>
-            <dt className="font-medium text-zinc-900 dark:text-zinc-50">Razza</dt>
+            <dt className="font-medium text-ink">Razza</dt>
             <dd>{animale.razza ?? "Non nota"}</dd>
           </div>
           <div>
-            <dt className="font-medium text-zinc-900 dark:text-zinc-50">Sesso</dt>
+            <dt className="font-medium text-ink">N° microchip</dt>
+            <dd>{animale.microchip ?? "Non registrato"}</dd>
+          </div>
+          <div>
+            <dt className="font-medium text-ink">Sesso</dt>
             <dd>
               {/* animale.sesso è opzionale (null = non noto): nessun
                   terzo valore nell'enum, la mancanza è gestita qui. */}
@@ -92,7 +96,7 @@ export default async function AnimaleDettaglioPage({
             </dd>
           </div>
           <div>
-            <dt className="font-medium text-zinc-900 dark:text-zinc-50">Sterilizzato</dt>
+            <dt className="font-medium text-ink">Sterilizzato</dt>
             <dd>
               {/* Booleano nullable: tre stati distinti (Sì/No/Non
                   specificato), non un semplice truthy check. */}
@@ -104,25 +108,25 @@ export default async function AnimaleDettaglioPage({
             </dd>
           </div>
           <div>
-            <dt className="font-medium text-zinc-900 dark:text-zinc-50">Età</dt>
+            <dt className="font-medium text-ink">Età</dt>
             <dd>{calcolaEta(animale.dataNascita) ?? "Non nota"}</dd>
           </div>
           {animale.descrizione && (
             <div>
-              <dt className="font-medium text-zinc-900 dark:text-zinc-50">Descrizione</dt>
+              <dt className="font-medium text-ink">Descrizione</dt>
               <dd>{animale.descrizione}</dd>
             </div>
           )}
           {animale.note && (
             <div>
-              <dt className="font-medium text-zinc-900 dark:text-zinc-50">Note</dt>
+              <dt className="font-medium text-ink">Note</dt>
               <dd>{animale.note}</dd>
             </div>
           )}
         </dl>
 
-        <div className="mt-6 border-t border-zinc-200 pt-4 dark:border-zinc-800">
-          <p className="mb-2 text-sm font-medium text-zinc-900 dark:text-zinc-50">Stato</p>
+        <div className="mt-6 border-t border-line pt-4">
+          <p className="mb-2 text-sm font-medium text-ink">Stato</p>
           {isAdmin ? (
             // Solo l'ADMIN vede il controllo interattivo (select + Salva);
             // le altre volontarie vedono lo stato in sola lettura.
@@ -140,27 +144,27 @@ export default async function AnimaleDettaglioPage({
               }
             />
           ) : (
-            <p className="text-sm text-zinc-700 dark:text-zinc-300">
+            <p className="text-sm text-ink-soft">
               {STATO_LABEL[animale.stato]}
             </p>
           )}
         </div>
 
-        <div className="mt-6 border-t border-zinc-200 pt-4 dark:border-zinc-800">
-          <div className="mb-3 flex items-center justify-between">
-            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
+        <div className="mt-6 border-t border-line pt-4">
+          <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm font-medium text-ink">
               Cartella clinica
             </p>
             <div className="flex flex-wrap gap-2">
               <Link
                 href={`/animali/${animale.id}/scheda`}
-                className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+                className="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:scale-105 hover:bg-page active:scale-95 active:bg-accent-soft"
               >
                 Scarica scheda clinica
               </Link>
               <Link
                 href={`/animali/${animale.id}/eventi/nuovo`}
-                className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+                className="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:scale-105 hover:bg-page active:scale-95 active:bg-accent-soft"
               >
                 Aggiungi evento
               </Link>
@@ -168,7 +172,7 @@ export default async function AnimaleDettaglioPage({
           </div>
 
           {animale.eventiClinici.length === 0 ? (
-            <p className="text-sm text-zinc-700 dark:text-zinc-300">
+            <p className="text-sm text-ink-soft">
               Nessun evento clinico registrato.
             </p>
           ) : (
@@ -188,11 +192,11 @@ export default async function AnimaleDettaglioPage({
                 return (
                   <li
                     key={evento.id}
-                    className="rounded-md border border-zinc-200 p-3 text-sm dark:border-zinc-800"
+                    className="rounded-xl border border-line bg-surface p-3 text-sm shadow-sm"
                   >
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div>
-                        <p className="font-medium text-zinc-900 dark:text-zinc-50">
+                        <p className="font-medium text-ink">
                           {TIPO_EVENTO_LABEL[evento.tipo]} — <span className="capitalize">{evento.nomeSpecifico}</span>
                         </p>
 
@@ -200,7 +204,7 @@ export default async function AnimaleDettaglioPage({
                           // Terapia continuativa: periodo, non un singolo
                           // istante. L'orario di "data" è ignorato in UI
                           // (vedi commento su EventoClinico in schema.prisma).
-                          <p className="text-zinc-700 dark:text-zinc-300">
+                          <p className="text-ink-soft">
                             {format(evento.data, "d MMMM yyyy", { locale: it })} →{" "}
                             {evento.dataFine
                               ? format(evento.dataFine, "d MMMM yyyy", { locale: it })
@@ -212,7 +216,7 @@ export default async function AnimaleDettaglioPage({
                               className={
                                 campo === "data"
                                   ? coloreScadenza(stato)
-                                  : "text-zinc-700 dark:text-zinc-300"
+                                  : "text-ink-soft"
                               }
                             >
                               {format(evento.data, "d MMMM yyyy, HH:mm", { locale: it })}
@@ -222,7 +226,7 @@ export default async function AnimaleDettaglioPage({
                                 className={
                                   campo === "dataScadenza"
                                     ? coloreScadenza(stato)
-                                    : "text-zinc-700 dark:text-zinc-300"
+                                    : "text-ink-soft"
                                 }
                               >
                                 Prossimo richiamo:{" "}
@@ -233,7 +237,7 @@ export default async function AnimaleDettaglioPage({
                         )}
 
                         {evento.note && (
-                          <p className="mt-1 text-zinc-700 dark:text-zinc-300">{evento.note}</p>
+                          <p className="mt-1 text-ink-soft">{evento.note}</p>
                         )}
 
                         {/* Nessun link se l'evento non è mai stato modificato
@@ -242,20 +246,20 @@ export default async function AnimaleDettaglioPage({
                             controllo interattivo su queste righe. */}
                         {evento.storico.length > 0 && (
                           <details className="mt-2">
-                            <summary className="cursor-pointer text-zinc-700 underline dark:text-zinc-300">
+                            <summary className="cursor-pointer text-ink-soft underline">
                               Storico modifiche ({evento.storico.length})
                             </summary>
                             <ul className="mt-2 space-y-2">
                               {evento.storico.map((versione) => (
                                 <li
                                   key={versione.id}
-                                  className="rounded-md border border-zinc-200 p-2 dark:border-zinc-800"
+                                  className="rounded-xl border border-line p-2"
                                 >
-                                  <p className="text-zinc-900 dark:text-zinc-50">
+                                  <p className="text-ink">
                                     {TIPO_EVENTO_LABEL[versione.tipo]} —{" "}
                                     <span className="capitalize">{versione.nomeSpecifico}</span>
                                   </p>
-                                  <p className="text-zinc-700 dark:text-zinc-300">
+                                  <p className="text-ink-soft">
                                     {versione.ricorrenza === "GIORNALIERA"
                                       ? `${format(versione.data, "d MMMM yyyy", { locale: it })} → ${
                                           versione.dataFine
@@ -265,15 +269,15 @@ export default async function AnimaleDettaglioPage({
                                       : format(versione.data, "d MMMM yyyy, HH:mm", { locale: it })}
                                   </p>
                                   {versione.dataScadenza && (
-                                    <p className="text-zinc-700 dark:text-zinc-300">
+                                    <p className="text-ink-soft">
                                       Prossimo richiamo:{" "}
                                       {format(versione.dataScadenza, "d MMMM yyyy, HH:mm", { locale: it })}
                                     </p>
                                   )}
                                   {versione.note && (
-                                    <p className="text-zinc-700 dark:text-zinc-300">{versione.note}</p>
+                                    <p className="text-ink-soft">{versione.note}</p>
                                   )}
-                                  <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+                                  <p className="mt-1 text-xs text-ink-soft">
                                     Modificato il{" "}
                                     {format(versione.modificatoIl, "d MMMM yyyy, HH:mm", { locale: it })}
                                   </p>
@@ -284,10 +288,10 @@ export default async function AnimaleDettaglioPage({
                         )}
                       </div>
 
-                      <div className="flex shrink-0 flex-col items-end gap-2">
+                      <div className="flex flex-wrap gap-2 sm:shrink-0 sm:flex-col sm:items-end">
                         <Link
                           href={`/animali/${animale.id}/eventi/${evento.id}/modifica`}
-                          className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+                          className="rounded-full border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:scale-105 hover:bg-page active:scale-95 active:bg-accent-soft"
                         >
                           Modifica
                         </Link>
@@ -319,13 +323,13 @@ export default async function AnimaleDettaglioPage({
           )}
         </div>
 
-        <div className="mt-6 border-t border-zinc-200 pt-4 dark:border-zinc-800">
-          <p className="mb-3 text-sm font-medium text-zinc-900 dark:text-zinc-50">
+        <div className="mt-6 border-t border-line pt-4">
+          <p className="mb-3 text-sm font-medium text-ink">
             Storico affidi/adozioni
           </p>
 
           {animale.adozioni.length === 0 ? (
-            <p className="text-sm text-zinc-700 dark:text-zinc-300">
+            <p className="text-sm text-ink-soft">
               Nessun affido o adozione registrati.
             </p>
           ) : (
@@ -333,15 +337,15 @@ export default async function AnimaleDettaglioPage({
               {animale.adozioni.map((adozione) => (
                 <li
                   key={adozione.id}
-                  className="rounded-md border border-zinc-200 p-3 text-sm dark:border-zinc-800"
+                  className="rounded-xl border border-line bg-surface p-3 text-sm shadow-sm"
                 >
-                  <p className="font-medium text-zinc-900 dark:text-zinc-50">
+                  <p className="font-medium text-ink">
                     {TIPO_RAPPORTO_LABEL[adozione.tipo]} —{" "}
                     <span className="capitalize">
                       {adozione.nome} {adozione.cognome}
                     </span>
                   </p>
-                  <p className="text-zinc-700 dark:text-zinc-300">
+                  <p className="text-ink-soft">
                     {format(adozione.dataInizio, "d MMMM yyyy", { locale: it })} →{" "}
                     {adozione.dataFine
                       ? format(adozione.dataFine, "d MMMM yyyy", { locale: it })
@@ -351,12 +355,12 @@ export default async function AnimaleDettaglioPage({
                       all'ADMIN, mai alla VOLONTARIA (creazione/modifica
                       già ADMIN-only tramite StatoControl). */}
                   {isAdmin && (
-                    <p className="text-zinc-700 dark:text-zinc-300">
+                    <p className="text-ink-soft">
                       {adozione.cellulare} · {adozione.documento}
                     </p>
                   )}
                   {adozione.note && (
-                    <p className="mt-1 text-zinc-700 dark:text-zinc-300">{adozione.note}</p>
+                    <p className="mt-1 text-ink-soft">{adozione.note}</p>
                   )}
                 </li>
               ))}
@@ -365,7 +369,7 @@ export default async function AnimaleDettaglioPage({
         </div>
 
         {isAdmin && (
-          <div className="mt-6 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+          <div className="mt-6 border-t border-line pt-4">
             <EliminaAnimaleButton
               animaleId={animale.id}
               nome={animale.nome}
@@ -375,7 +379,7 @@ export default async function AnimaleDettaglioPage({
           </div>
         )}
 
-        <div className="mt-6 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+        <div className="mt-6 border-t border-line pt-4">
           {animale.foto ? (
             <img
               src={animale.foto}
@@ -383,7 +387,7 @@ export default async function AnimaleDettaglioPage({
               className="min-h-[50vh] w-full rounded-md object-cover"
             />
           ) : (
-            <div className="flex min-h-[50vh] w-full items-center justify-center rounded-md bg-zinc-100 text-sm text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+            <div className="flex min-h-[50vh] w-full items-center justify-center rounded-md bg-surface text-sm text-ink-soft">
               Nessuna foto disponibile
             </div>
           )}

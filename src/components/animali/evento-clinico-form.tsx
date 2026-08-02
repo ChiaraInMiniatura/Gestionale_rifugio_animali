@@ -182,20 +182,20 @@ export function EventoClinicoForm({
     <form
       onSubmit={handleSubmit(onSubmit)}
       noValidate
-      className="w-full max-w-lg rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950"
+      className="w-full max-w-lg rounded-2xl border border-line bg-surface p-6 shadow-sm"
     >
-      <h1 className="mb-6 text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+      <h1 className="mb-6 text-xl font-semibold text-ink">
         {eventoIniziale ? "Modifica evento clinico" : "Nuovo evento clinico"}
       </h1>
 
       <div className="mb-4">
-        <label htmlFor="tipo" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="tipo" className="mb-1 block text-sm font-medium text-ink-soft">
           Tipo
         </label>
         <select
           id="tipo"
           {...register("tipo")}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
         >
           {TIPI.map((t) => (
             <option key={t} value={t}>
@@ -206,7 +206,7 @@ export function EventoClinicoForm({
       </div>
 
       <div className="mb-4">
-        <label htmlFor="nomeSpecifico" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="nomeSpecifico" className="mb-1 block text-sm font-medium text-ink-soft">
           Nome specifico
         </label>
         <input
@@ -214,15 +214,15 @@ export function EventoClinicoForm({
           type="text"
           placeholder='Es. "Trivalente", "Advantix", "Controllo annuale"'
           {...register("nomeSpecifico")}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
         />
         {errors.nomeSpecifico && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.nomeSpecifico.message}</p>
+          <p className="mt-1 text-sm text-danger">{errors.nomeSpecifico.message}</p>
         )}
       </div>
 
       <div className="mb-4">
-        <label htmlFor="ricorrenza" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="ricorrenza" className="mb-1 block text-sm font-medium text-ink-soft">
           Frequenza
         </label>
         <select
@@ -242,7 +242,7 @@ export function EventoClinicoForm({
               setValue("dataFine", undefined);
             }
           }}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
         >
           {RICORRENZE.map((r) => (
             <option key={r} value={r}>
@@ -253,33 +253,33 @@ export function EventoClinicoForm({
       </div>
 
       <div className="mb-4">
-        <label htmlFor="data" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="data" className="mb-1 block text-sm font-medium text-ink-soft">
           {ricorrenza === "GIORNALIERA" ? "Data di inizio" : "Data (con orario)"}
         </label>
         <input
           id="data"
           type="datetime-local"
           {...register("data")}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
         />
         {errors.data && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.data.message}</p>
+          <p className="mt-1 text-sm text-danger">{errors.data.message}</p>
         )}
       </div>
 
       {ricorrenza === "GIORNALIERA" ? (
         <div className="mb-6">
-          <label htmlFor="dataFine" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="dataFine" className="mb-1 block text-sm font-medium text-ink-soft">
             Data di fine (lascia vuoto se ancora in corso)
           </label>
           <input
             id="dataFine"
             type="datetime-local"
             {...register("dataFine")}
-            className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
           />
           {errors.dataFine && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.dataFine.message}</p>
+            <p className="mt-1 text-sm text-danger">{errors.dataFine.message}</p>
           )}
         </div>
       ) : ricorrenza === "MENSILE" || ricorrenza === "ANNUALE" ? (
@@ -287,46 +287,46 @@ export function EventoClinicoForm({
         // solo il sistema, alla conferma di questo (vedi
         // src/lib/genera-prossimo-evento.ts) — non ha senso chiedere qui
         // una data che l'app calcola automaticamente.
-        <p className="mb-6 text-sm text-zinc-700 dark:text-zinc-300">
+        <p className="mb-6 text-sm text-ink-soft">
           Il prossimo richiamo verrà generato automaticamente alla conferma.
         </p>
       ) : (
         <div className="mb-6">
-          <label htmlFor="dataScadenza" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="dataScadenza" className="mb-1 block text-sm font-medium text-ink-soft">
             Prossimo richiamo (facoltativo)
           </label>
           <input
             id="dataScadenza"
             type="datetime-local"
             {...register("dataScadenza")}
-            className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
           />
           {errors.dataScadenza && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.dataScadenza.message}</p>
+            <p className="mt-1 text-sm text-danger">{errors.dataScadenza.message}</p>
           )}
         </div>
       )}
 
       <div className="mb-6">
-        <label htmlFor="note" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="note" className="mb-1 block text-sm font-medium text-ink-soft">
           Note {`(es. veterinario, luogo)`}
         </label>
         <textarea
           id="note"
           rows={3}
           {...register("note")}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
         />
       </div>
 
       {erroreServer && (
-        <p className="mb-4 text-sm text-red-600 dark:text-red-400">{erroreServer}</p>
+        <p className="mb-4 text-sm text-danger">{erroreServer}</p>
       )}
 
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-full bg-teal-700 px-5 py-2.5 font-medium text-white transition hover:scale-[1.02] hover:bg-teal-600 active:scale-95 active:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
+        className="w-full rounded-full bg-accent px-5 py-2.5 font-medium text-white transition hover:scale-[1.02] hover:bg-accent-hover active:scale-95 active:bg-accent-active disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isSubmitting ? "Salvataggio in corso..." : "Salva"}
       </button>

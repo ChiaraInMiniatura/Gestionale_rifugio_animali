@@ -19,6 +19,7 @@ type AnimaleIniziale = {
   nome: string;
   specie: Specie;
   razza: string | null;
+  microchip: string | null;
   dataNascita: Date | null;
   descrizione: string | null;
   note: string | null;
@@ -59,6 +60,7 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
           nome: animaleIniziale.nome,
           specie: animaleIniziale.specie,
           razza: animaleIniziale.razza ?? "",
+          microchip: animaleIniziale.microchip ?? "",
           dataNascita: toDateInputValue(animaleIniziale.dataNascita),
           descrizione: animaleIniziale.descrizione ?? "",
           note: animaleIniziale.note ?? "",
@@ -144,35 +146,35 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
     <form
       onSubmit={handleSubmit(onSubmit)}
       noValidate
-      className="w-full max-w-lg rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950"
+      className="w-full max-w-lg rounded-2xl border border-line bg-surface p-6 shadow-sm"
     >
-      <h1 className="mb-6 text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+      <h1 className="mb-6 text-xl font-semibold text-ink">
         {animaleIniziale ? "Modifica animale" : "Nuovo animale"}
       </h1>
 
       <div className="mb-4">
-        <label htmlFor="nome" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="nome" className="mb-1 block text-sm font-medium text-ink-soft">
           Nome
         </label>
         <input
           id="nome"
           type="text"
           {...register("nome")}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
         />
         {errors.nome && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.nome.message}</p>
+          <p className="mt-1 text-sm text-danger">{errors.nome.message}</p>
         )}
       </div>
 
       <div className="mb-4">
-        <label htmlFor="specie" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="specie" className="mb-1 block text-sm font-medium text-ink-soft">
           Specie
         </label>
         <select
           id="specie"
           {...register("specie")}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
         >
           <option value="CANE">Cane</option>
           <option value="GATTO">Gatto</option>
@@ -181,7 +183,7 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
       </div>
 
       <div className="mb-4">
-        <label htmlFor="sesso" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="sesso" className="mb-1 block text-sm font-medium text-ink-soft">
           Sesso
         </label>
         <select
@@ -191,7 +193,7 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
           // Zod: senza questo, "" verrebbe rifiutato come valore non
           // valido dell'enum invece di essere trattato come "non specificato".
           {...register("sesso", { setValueAs: (v) => (v === "" ? undefined : (v as Sesso)) })}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
         >
           <option value="">Non noto</option>
           <option value="MASCHIO">Maschio</option>
@@ -200,7 +202,7 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
       </div>
 
       <div className="mb-4">
-        <label htmlFor="sterilizzato" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="sterilizzato" className="mb-1 block text-sm font-medium text-ink-soft">
           Sterilizzato
         </label>
         <select
@@ -211,7 +213,7 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
           {...register("sterilizzato", {
             setValueAs: (v) => (v === "" ? undefined : v === "true"),
           })}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
         >
           <option value="">Non specificato</option>
           <option value="true">Sì</option>
@@ -220,58 +222,70 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
       </div>
 
       <div className="mb-4">
-        <label htmlFor="razza" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="razza" className="mb-1 block text-sm font-medium text-ink-soft">
           Razza
         </label>
         <input
           id="razza"
           type="text"
           {...register("razza")}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
         />
       </div>
 
       <div className="mb-4">
-        <label htmlFor="dataNascita" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="microchip" className="mb-1 block text-sm font-medium text-ink-soft">
+          N° microchip
+        </label>
+        <input
+          id="microchip"
+          type="text"
+          {...register("microchip")}
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="dataNascita" className="mb-1 block text-sm font-medium text-ink-soft">
           Data di nascita (indicativa se non nota con precisione)
         </label>
         <input
           id="dataNascita"
           type="date"
           {...register("dataNascita")}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
         />
         {errors.dataNascita && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.dataNascita.message}</p>
+          <p className="mt-1 text-sm text-danger">{errors.dataNascita.message}</p>
         )}
       </div>
 
       <div className="mb-4">
-        <label htmlFor="descrizione" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="descrizione" className="mb-1 block text-sm font-medium text-ink-soft">
           Descrizione
         </label>
         <textarea
           id="descrizione"
           rows={3}
           {...register("descrizione")}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
         />
       </div>
 
       <div className="mb-6">
-        <label htmlFor="note" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="note" className="mb-1 block text-sm font-medium text-ink-soft">
           Note
         </label>
         <textarea
           id="note"
           rows={3}
           {...register("note")}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-xl border border-line bg-page px-3 py-2 text-ink"
         />
       </div>
 
       <div className="mb-6">
-        <label htmlFor="foto" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="foto" className="mb-1 block text-sm font-medium text-ink-soft">
           Foto
         </label>
         {foto && (
@@ -298,29 +312,29 @@ export function AnimaleForm({ animaleIniziale }: { animaleIniziale?: AnimaleIniz
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={elaborazioneFoto}
-          className="rounded-full border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition hover:scale-105 hover:bg-zinc-100 active:scale-95 active:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+          className="rounded-full border border-line px-4 py-2 text-sm font-medium text-ink-soft transition hover:scale-105 hover:bg-page active:scale-95 active:bg-accent-soft disabled:cursor-not-allowed disabled:opacity-50"
         >
           {foto ? "Cambia foto" : "Carica foto"}
         </button>
         {elaborazioneFoto && (
-          <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">Elaborazione immagine...</p>
+          <p className="mt-1 text-sm text-ink-soft">Elaborazione immagine...</p>
         )}
         {erroreFoto && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{erroreFoto}</p>
+          <p className="mt-1 text-sm text-danger">{erroreFoto}</p>
         )}
         {errors.foto && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.foto.message}</p>
+          <p className="mt-1 text-sm text-danger">{errors.foto.message}</p>
         )}
       </div>
 
       {erroreServer && (
-        <p className="mb-4 text-sm text-red-600 dark:text-red-400">{erroreServer}</p>
+        <p className="mb-4 text-sm text-danger">{erroreServer}</p>
       )}
 
       <button
         type="submit"
         disabled={isSubmitting || elaborazioneFoto}
-        className="w-full rounded-full bg-teal-700 px-5 py-2.5 font-medium text-white transition hover:scale-[1.02] hover:bg-teal-600 active:scale-95 active:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-700"
+        className="w-full rounded-full bg-accent px-5 py-2.5 font-medium text-white transition hover:scale-[1.02] hover:bg-accent-hover active:scale-95 active:bg-accent-active disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isSubmitting ? "Salvataggio in corso..." : "Salva"}
       </button>

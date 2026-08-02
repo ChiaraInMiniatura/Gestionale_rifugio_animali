@@ -18,6 +18,18 @@ process.env.TZ = "Europe/Rome";
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
+  // L'indicatore di sviluppo (badge fluttuante) di Next.js in questa
+  // versione compare anche con `npm run start`, non solo in `npm run dev`:
+  // niente a che fare con l'app vera, va disattivato esplicitamente.
+  devIndicators: false,
+  // TEMPORANEO — per testare da telefono (rete Wi-Fi locale o tunnel
+  // ngrok): senza questo, Next.js blocca le risorse di sviluppo richieste
+  // da un indirizzo diverso da "localhost", e il form di login torna al
+  // comportamento grezzo del browser (password inclusa nell'URL). L'IP
+  // locale va aggiornato se cambia; il dominio ngrok va aggiornato se il
+  // tunnel viene riavviato con un indirizzo diverso. Da rimuovere prima
+  // del commit finale.
+  allowedDevOrigins: ["192.168.1.20", "pod-jacket-headwear.ngrok-free.dev"],
 };
 
 export default nextConfig;

@@ -31,7 +31,7 @@ export default async function ModificaEventoClinicoPage({
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-teal-100 px-4 py-10 dark:bg-[#04120f]">
+    <div className="flex flex-1 items-center justify-center bg-page px-4 py-10">
       <EventoClinicoForm
         animaleId={animale.id}
         nomeAnimale={animale.nome}
