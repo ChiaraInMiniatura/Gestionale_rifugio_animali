@@ -1,16 +1,92 @@
 # 🐾 Frida
 
-**Gestionale web per un rifugio per cani** — registro animali, cartella clinica,
-scadenzario dei richiami e ciclo adozioni, pensato per essere usato soprattutto
-da smartphone da volontarie non necessariamente pratiche di tecnologia.
+**Il gestionale per il tuo rifugio, pensato per chi passa la giornata tra i
+canili, non davanti a un computer.**
 
-## Perché esiste
+Registro animali, cartella clinica, scadenzario dei richiami e ciclo
+adozioni in un unico posto — caratteri grandi, un tocco per ogni azione,
+pensato prima di tutto per lo smartphone.
 
-Le volontarie di un rifugio seguono ogni cane su fogli sparsi o messaggi
-WhatsApp: vaccini, antiparassitari, richiami, chi è in affido a chi. Frida
-raccoglie tutto in un unico posto, con un'interfaccia semplice, caratteri e
-bottoni grandi, e conferme esplicite prima di ogni azione che non si può
-annullare.
+<table>
+<tr>
+<td width="62%" valign="top">
+<img src="docs/screenshots/desktop-login.png" alt="Frida su computer">
+</td>
+<td width="38%" valign="top">
+<img src="docs/screenshots/mobile-login.png" alt="Frida su cellulare">
+</td>
+</tr>
+</table>
+
+## Per chi è pensato
+
+Frida nasce per i rifugi che oggi si tengono insieme con quaderni, fogli
+Excel e gruppi WhatsApp. Due tipi di persone la usano ogni giorno:
+
+- **Le volontarie e i volontari**, spesso non giovanissimi e non abituati
+  ad app o gestionali: registrano vaccini, cure e richiami dal telefono, in
+  pochi tocchi, senza dover "capire l'informatica" per farlo.
+- **Chi amministra il rifugio**: approva i nuovi account, decide chi va in
+  affido o viene adottato, tiene traccia di chi ha in cura ogni animale —
+  da desktop, quando serve una visione d'insieme.
+
+Ogni schermata è pensata perché la persona più anziana del gruppo di
+volontariato riesca a usarla senza chiedere aiuto.
+
+## Cosa risolve
+
+- **"Quando ha fatto l'ultimo vaccino Plutino?"** — cartella clinica per
+  ogni animale, sempre consultabile, mai su un foglio che si perde.
+- **"Chi doveva portare Mario dal veterinario questa settimana?"** — vista
+  scadenze su tutto il rifugio, in rosso quello che è già scaduto.
+- **"Chi ha in affido questo cane, e da quando?"** — storico affidi/adozioni
+  per animale, dati sensibili visibili solo a chi amministra.
+- **"Devo reinserire a mano l'antiparassitario ogni mese?"** — no: i
+  richiami periodici si rigenerano da soli alla conferma.
+
+## Screenshot
+
+<table>
+<tr>
+<td width="66%" valign="top">
+<img src="docs/screenshots/desktop-dashboard.png" alt="Dashboard su computer">
+<p align="center"><sub>Dashboard — farmaci da somministrare oggi, su tutti gli animali del rifugio</sub></p>
+</td>
+<td width="34%" valign="top">
+<img src="docs/screenshots/mobile-menu.png" alt="Menu su cellulare">
+<p align="center"><sub>Menu a un tocco, pensato per il pollice</sub></p>
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="50%" valign="top">
+<img src="docs/screenshots/desktop-animali.png" alt="Registro animali su computer">
+<p align="center"><sub>Registro animali — ricerca per nome/razza, stato, specie</sub></p>
+</td>
+<td width="50%" valign="top">
+<img src="docs/screenshots/mobile-animali.png" alt="Registro animali su cellulare">
+<p align="center"><sub>Stessa vista, a piena larghezza sul telefono</sub></p>
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="42%" valign="top">
+<img src="docs/screenshots/mobile-dettaglio.png" alt="Dettaglio animale su cellulare">
+<p align="center"><sub>Dettaglio animale — anagrafica, cartella clinica, foto</sub></p>
+</td>
+<td width="58%" valign="top">
+<img src="docs/screenshots/desktop-scadenze.png" alt="Scadenze su computer">
+<p align="center"><sub>Scadenze — vista aggregata, imminenti in rosso/ambra</sub></p>
+</td>
+</tr>
+</table>
+
+<img src="docs/screenshots/desktop-admin.png" alt="Pannello di amministrazione">
+<p align="center"><sub>Amministrazione — approvazioni, ruoli, password, senza self-service per chi amministra</sub></p>
 
 ## Funzionalità principali
 
@@ -22,11 +98,12 @@ richiesta contro lo stato reale nel database — non solo contro il token, così
 una disapprovazione o un cambio ruolo hanno effetto immediato.
 
 ### Registro animali e cartella clinica
-Anagrafica (nome, specie, razza, età calcolata dalla data di nascita, sesso,
-sterilizzazione, foto) e cartella clinica per ogni animale: vaccini,
-antiparassitari, visite, terapie continuative. Ogni evento ha uno storico
-delle modifiche, e una scheda clinica stampabile/scaricabile da consegnare a
-un veterinario o a un nuovo affidatario.
+Anagrafica (nome, specie, razza, numero di microchip, età calcolata dalla
+data di nascita, sesso, sterilizzazione, foto) e cartella clinica per ogni
+animale: vaccini, antiparassitari, visite, terapie continuative. Ogni
+evento ha uno storico delle modifiche, e una scheda clinica
+stampabile/scaricabile da consegnare a un veterinario o a chi affida/adotta
+l'animale.
 
 ### Scadenze e richiami automatici
 Vista aggregata su tutto il rifugio, evidenziata per urgenza (colore *e*
@@ -47,7 +124,7 @@ eliminare o declassare se stesso.
 
 ### Installabile
 Icona dedicata su cellulare ("Aggiungi a schermata Home") e computer
-(Chrome/Edge, finestra a sé), con bottone di installazione in dashboard.
+(Chrome/Edge, finestra a sé), con voce "Installa l'app" sempre nel menu.
 Nessun funzionamento offline: cambia solo il modo in cui l'app si apre.
 
 ## Stack tecnico
@@ -58,36 +135,3 @@ Nessun funzionamento offline: cambia solo il modo in cui l'app si apre.
 - **Auth.js v4** (Credentials + sessione JWT)
 - **react-hook-form** + **zod** (stessa validazione client e server)
 - Icone e favicon generati via codice (`next/og`), nessun file immagine da mantenere
-
-## Eseguirlo in locale
-
-```bash
-npm install
-npx prisma generate
-npx prisma migrate dev
-npm run dev
-```
-
-Serve un PostgreSQL raggiungibile da `DATABASE_URL` (`.env`, non versionato).
-
-## Nota sul deploy
-
-Il progetto non è pubblicato online: il database è locale (`localhost`), non
-raggiungibile da un hosting come Vercel. Per pubblicarlo servirebbe un
-Postgres in cloud (es. Neon, Supabase, Railway) e aggiornare `DATABASE_URL` —
-tecnicamente possibile, semplicemente non ancora fatto.
-
-## Modello dati
-
-- `Role` (enum): `VOLONTARIA`, `ADMIN`
-- `User`: `id`, `email` (univoca), `password` (hash bcrypt, mai in chiaro), `name`, `role` (default `VOLONTARIA`), `approved` (default `false`), `cellulare` (opzionale, ad uso esclusivo admin), `note` (opzionale, ad uso esclusivo admin), `createdAt`
-- `StatoAnimale` (enum): `DISPONIBILE`, `IN_AFFIDO`, `ADOTTATO`
-- `Specie` (enum): `CANE`, `GATTO`, `ALTRO` — pensata per un'estensione futura oltre ai cani, anche se oggi il rifugio ospita solo cani
-- `Sesso` (enum): `MASCHIO`, `FEMMINA`
-- `Animale`: `id`, `nome`, `specie` (default `CANE`), `razza` (opzionale), `dataNascita` (opzionale, indicativa se non nota con precisione), `descrizione` (opzionale), `note` (opzionale), `stato` (default `DISPONIBILE`), `foto` (opzionale, data URL base64), `sesso` (opzionale), `sterilizzato` (opzionale, booleano), `createdAt`, `updatedAt`
-- `TipoEvento` (enum): `VACCINO`, `ANTIPARASSITARIO`, `VISITA`, `TERAPIA`
-- `RicorrenzaEvento` (enum): `NESSUNA` (evento singolo, con eventuale richiamo manuale), `GIORNALIERA` (terapia continuativa), `MENSILE`/`ANNUALE` (richiamo periodico con rinnovo automatico)
-- `EventoClinico`: `id`, `animaleId` (relazione con `Animale`, `onDelete: Cascade` — eliminare un animale elimina anche la sua cartella clinica), `tipo`, `nomeSpecifico`, `data` (con orario), `dataScadenza` (opzionale, solo per ricorrenza `NESSUNA`), `ricorrenza` (default `NESSUNA`), `dataFine` (opzionale, solo per ricorrenza `GIORNALIERA`), `confermato` (booleano, default `true`; per ricorrenza `NESSUNA`/`MENSILE`/`ANNUALE` indica se l'appuntamento è stato confermato come avvenuto), `prossimoGenerato` (booleano, default `false`; solo per `MENSILE`/`ANNUALE`, evita di generare due volte il richiamo successivo), `note` (opzionale), `createdAt`, `updatedAt`
-- `EventoClinicoStorico`: `id`, `eventoId` (relazione con `EventoClinico`, `onDelete: Cascade`), istantanea dei campi dell'evento subito prima di una modifica (tipo, nomeSpecifico, data, dataScadenza, ricorrenza, dataFine, confermato, note), `modificatoIl` — nessun riferimento a chi ha fatto la modifica, solo cosa e quando
-- `TipoRapporto` (enum): `AFFIDO`, `ADOZIONE` — un affido che diventa adozione aggiorna il tipo sullo stesso record
-- `Adozione`: `id`, `animaleId` (relazione con `Animale`, `onDelete: Cascade`), `tipo`, `nome`, `cognome`, `cellulare`, `documento` (dati sensibili, visibili solo all'ADMIN), `dataInizio`, `dataFine` (opzionale, `null` = rapporto ancora in corso), `note` (opzionale), `createdAt`, `updatedAt`
